@@ -15,8 +15,11 @@ import android.widget.TextView;
 
 import net.firsp.amber.R;
 import net.firsp.amber.image.IconCache;
+import net.firsp.amber.util.Callback;
 import net.firsp.amber.util.CroutonUtil;
 import net.firsp.amber.util.HttpDownloader;
+import net.firsp.amber.util.ToastUtil;
+import net.firsp.amber.util.UIHandler;
 
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -31,11 +34,13 @@ import twitter4j.Status;
 public class StatusListAdapter extends BaseAdapter implements AbsListView.OnScrollListener {
 
     Activity activity;
+    IconCache cache;
 
     public boolean requireRefresh;
 
     public StatusListAdapter(Activity activity) {
         this.activity = activity;
+        cache = new IconCache(activity);
     }
 
     Map<Long, Status> statuses = new ConcurrentHashMap<Long, Status>();
@@ -87,23 +92,6 @@ public class StatusListAdapter extends BaseAdapter implements AbsListView.OnScro
         return i;
     }
 
-    //@Override
-    public View getView_(int i, View view, ViewGroup viewGroup) {
-        ViewGroup group = new LinearLayout(activity);
-        ImageView img = new ImageView(activity);
-        img.setImageResource(R.drawable.unh7);
-        TextView v = null;
-        try {
-            v = (TextView) activity.getLayoutInflater().inflate(android.R.layout.simple_list_item_1, null);
-        } catch (Exception e) {
-            v = new TextView(activity);
-        }
-        v.setText("チンポ\nソイヤ\nアナル\nアヌス");
-        group.addView(img);
-        group.addView(v);
-        return group;
-    }
-
     @Override
     public View getView(int i, View view, ViewGroup viewGroup) {
         Status status = statusList.get(i);
@@ -112,7 +100,7 @@ public class StatusListAdapter extends BaseAdapter implements AbsListView.OnScro
         final String sn = original.getUser().getScreenName();
         final String url = original.getUser().getOriginalProfileImageURL();
 
-        ViewGroup group = new LinearLayout(activity);
+        final ViewGroup group = new LinearLayout(activity);
 
         final ImageView img = new ImageView(activity);
 
@@ -126,36 +114,17 @@ public class StatusListAdapter extends BaseAdapter implements AbsListView.OnScro
         //setAdjustViewBoundsすると画像が拡大されなくなるんですよ
         //img.setAdjustViewBounds(true);
         //img.setImageResource(R.drawable.unh7);
-        Bitmap b = IconCache.getIcon(activity, sn, url);
-        if (b != null) {
-            img.setImageBitmap(b);
-        } else {
-            b = BitmapFactory.decodeResource(activity.getResources(), R.drawable.unh7);
-            b = Bitmap.createScaledBitmap(b, imgSize, imgSize, true);
-            img.setImageBitmap(b);
-            new Thread() {
-                @Override
-                public void run() {
-                    Bitmap b = IconCache.getIcon(activity, sn, url);
-                    if (b == null) {
-                        byte[] data = HttpDownloader.download(url);
-                        if (data != null) {
-                            IconCache.putIcon(activity, sn, url, data);
-                            b = IconCache.getIcon(activity, sn, url);
-                        }
+        img.setImageBitmap(cache.getIcon(sn, url, new Callback() {
+            @Override
+            public void callback(final Object callback) {
+                new UIHandler(){
+                    @Override
+                    public void run() {
+                        img.setImageBitmap((Bitmap)callback);
                     }
-                    if (b != null) {
-                        final Bitmap bit = b;
-                        new Handler(Looper.getMainLooper()).post(new Runnable() {
-                            @Override
-                            public void run() {
-                                img.setImageBitmap(bit);
-                            }
-                        });
-                    }
-                }
-            }.start();
-        }
+                };
+            }
+        }));
 
         TextView v = null;
         try {

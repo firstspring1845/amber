@@ -3,54 +3,87 @@ package net.firsp.amber.image;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.os.Handler;
+import android.os.Looper;
 import android.util.LruCache;
 
+import net.firsp.amber.R;
+import net.firsp.amber.util.Callback;
+import net.firsp.amber.util.HttpDownloader;
+
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.io.InputStream;
 import java.security.MessageDigest;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.LinkedBlockingQueue;
 
-public class IconCache {
+public class IconCache implements Runnable {
 
-    static LruCache<String, Bitmap> memCache = new LruCache<String, Bitmap>(5242880); //5MB
-
-    public static Bitmap getIcon(Context context, String sn, String url) {
-        Bitmap b = memCache.get(url);
-        if (b != null) {
-            memCache.put(url, b);
-            return b;
-        }
-        b = BitmapFactory.decodeFile(getFilePath(context, sn, url).getAbsolutePath());
-        if (b != null) {
-            //ImageViewが激最悪なのでここでリサイズ
-            int imgSize = (int) (context.getResources().getDisplayMetrics().densityDpi / 160F * 48);
-            b = Bitmap.createScaledBitmap(b, imgSize, imgSize, true);
-            memCache.put(url, b);
-        }
-        return b;
+    public IconCache(Context context){
+        this.context = context;
+        new Thread(this).start();
     }
 
-    public static void putIcon(Context context, String sn, String url, byte[] data) {
-        //激リサイズ
+    Context context;
+    Bitmap def;
+    LruCache<String, Bitmap> memCache = new LruCache<String, Bitmap>(5242880); //5MB
+    LinkedBlockingQueue<File> paths = new LinkedBlockingQueue<File>();
+    LinkedBlockingQueue<String> urls = new LinkedBlockingQueue<String>();
+    LinkedBlockingQueue<Callback> callbacks = new LinkedBlockingQueue<Callback>();
+
+    public Bitmap getIcon(String sn, String url, Callback callback) {
+        Bitmap b = memCache.get(url);
+        if (b != null) {
+            return b;
+        }
+        File path = getFilePath(sn, url);
+        try{
+            FileInputStream fis = new FileInputStream(path);
+            byte[] data = new byte[(int)path.length()];
+            fis.read(data);
+            b = putIcon(path, url, data, false);
+            if(b != null){
+                return b;
+            }
+        }catch(Exception e){
+        }
+        paths.add(path);
+        urls.add(url);
+        callbacks.add(callback);
+        if(def == null){
+            def = BitmapFactory.decodeResource(context.getResources(), R.drawable.unh7);
+            int imgSize = (int) (context.getResources().getDisplayMetrics().densityDpi / 160F * 48);
+            def = Bitmap.createScaledBitmap(def, imgSize, imgSize, true);
+        }
+        return def;
+    }
+
+    public Bitmap putIcon(File path, String url, byte[] data, boolean putLocal) {
+        //ImageViewが激最悪なのでここでリサイズ
         Bitmap b = BitmapFactory.decodeByteArray(data, 0, data.length);
         int imgSize = (int) (context.getResources().getDisplayMetrics().densityDpi / 160F * 48);
         b = Bitmap.createScaledBitmap(b, imgSize, imgSize, true);
         memCache.put(url, b);
         FileOutputStream fos = null;
-        try {
-            File cache = getFilePath(context, sn, url);
-            cache.getParentFile().mkdirs();
-            fos = new FileOutputStream(cache);
-            fos.write(data);
-            fos.close();
-        } catch (Exception e) {
+        if(putLocal){
             try {
+                path.getParentFile().mkdirs();
+                fos = new FileOutputStream(path);
+                fos.write(data);
                 fos.close();
-            } catch (Exception e1) {
+            } catch (Exception e) {
+                try {
+                    fos.close();
+                } catch (Exception e1) {
+                }
             }
         }
+        return b;
     }
 
-    public static File getFilePath(Context context, String sn, String url) {
+    public File getFilePath(String sn, String url) {
         File cache = new File(context.getCacheDir().getAbsolutePath(), "cache");
         File dir = new File(cache, sn);
         return new File(dir, getMD5String(url));
@@ -68,4 +101,27 @@ public class IconCache {
             return ":(";
         }
     }
+
+    @Override
+    public void run(){
+        while (true){
+            try{
+                File path = paths.take();
+                String url = urls.take();
+                Callback callback = callbacks.take();
+                Bitmap b = memCache.get(url);
+                if(b == null){
+                    byte[] data = HttpDownloader.download(url);
+                    if (data != null) {
+                        b = putIcon(path, url, data, true);
+                    }
+                }
+                if(b != null){
+                    callback.callback(b);
+                }
+            }catch(Exception e){
+            }
+        }
+    }
+
 }
