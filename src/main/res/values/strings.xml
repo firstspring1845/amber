@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">Amber</string>
+    <string name="hello_world">Hello world!</string>
+    <string name="action_authorize">認証</string>
+    <string name="action_backup">アカウント情報のバックアップ</string>
+    <string name="action_restore">アカウント情報の復元</string>
+    <string name="action_shutdown">強制終了</string>
+    <string name="list_action_get_member">メンバー取得</string>
+    <string name="list_action_show_member">メンバー表示</string>
+    <string name="list_action_streaming">動的取得</string>
+
+</resources>
