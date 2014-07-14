@@ -16,6 +16,8 @@ import twitter4j.conf.ConfigurationBuilder;
 
 public class Account implements Serializable {
 
+    private static final long serialVersionUID = 2252942050563163136L;
+
     private String ck;
     private String cs;
     private String at;

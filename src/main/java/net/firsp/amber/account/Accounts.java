@@ -10,6 +10,8 @@ import java.util.TreeMap;
 
 public class Accounts implements Serializable {
 
+    private static final long serialVersionUID = 5119823266428618752L;
+
     private static Accounts instance;
 
     public static void initialize(Context c) {
