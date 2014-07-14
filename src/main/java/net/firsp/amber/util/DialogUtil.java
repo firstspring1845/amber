@@ -7,9 +7,6 @@ import android.content.Context;
 import android.os.Handler;
 import android.os.Looper;
 
-/**
- * Created by owner on 2014/07/06.
- */
 public class DialogUtil {
 
     public static void showException(final Activity activity, Exception exception) {

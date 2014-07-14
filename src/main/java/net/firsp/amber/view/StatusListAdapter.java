@@ -7,6 +7,7 @@ import android.os.Handler;
 import android.os.Looper;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AbsListView;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -14,6 +15,7 @@ import android.widget.TextView;
 
 import net.firsp.amber.R;
 import net.firsp.amber.image.IconCache;
+import net.firsp.amber.util.CroutonUtil;
 import net.firsp.amber.util.HttpDownloader;
 
 import java.util.ArrayList;
@@ -26,14 +28,15 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import twitter4j.Status;
 
-public class StatusListAdapter extends BaseAdapter {
+public class StatusListAdapter extends BaseAdapter implements AbsListView.OnScrollListener {
 
     Activity activity;
+
+    public boolean requireRefresh;
 
     public StatusListAdapter(Activity activity) {
         this.activity = activity;
     }
-
 
     Map<Long, Status> statuses = new ConcurrentHashMap<Long, Status>();
     List<Status> statusList = Collections.synchronizedList(new ArrayList<Status>());
@@ -190,5 +193,31 @@ public class StatusListAdapter extends BaseAdapter {
         group.addView(v);
 
         return group;
+    }
+
+    //OnScrollListener Implements
+
+    @Override
+    public void onScrollStateChanged(AbsListView absListView, int i) {
+        if (!requireRefresh) {
+            return;
+        }
+        if (absListView.getFirstVisiblePosition() == 0 && absListView.getChildAt(0) != null && absListView.getChildAt(0).getTop() == 0) {
+            requireRefresh = false;
+            int before = getCount();
+            refresh();
+            int after = getCount();
+            int adds = after - before;
+            absListView.setSelection(adds);
+            if (adds != 0) {
+                CroutonUtil.showText(activity, "" + adds + "件追加しました");
+                //ToastUtil.show(this, "" + adds + "件追加しました");
+            }
+        }
+    }
+
+    @Override
+    public void onScroll(AbsListView absListView, int i, int i2, int i3) {
+
     }
 }

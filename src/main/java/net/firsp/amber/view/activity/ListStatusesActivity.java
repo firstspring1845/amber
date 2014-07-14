@@ -41,7 +41,7 @@ import twitter4j.Twitter;
 import twitter4j.TwitterStream;
 import twitter4j.User;
 
-public class ListStatusesActivity extends ActionBarActivity implements StatusListener, AbsListView.OnScrollListener {
+public class ListStatusesActivity extends ActionBarActivity implements StatusListener {
 
     StatusListAdapter adapter;
 
@@ -63,7 +63,7 @@ public class ListStatusesActivity extends ActionBarActivity implements StatusLis
         ListView v = new ListView(this);
         adapter = new StatusListAdapter(this);
         v.setAdapter(adapter);
-        v.setOnScrollListener(this);
+        v.setOnScrollListener(adapter);
         v.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
@@ -202,7 +202,7 @@ public class ListStatusesActivity extends ActionBarActivity implements StatusLis
     public void onStatus(Status status) {
         if (filter.filter(status)) {
             adapter.add(status);
-            requireRefresh = true;
+            adapter.requireRefresh = true;
         }
     }
 
@@ -231,33 +231,6 @@ public class ListStatusesActivity extends ActionBarActivity implements StatusLis
 
     }
 
-    //OnScrollListener Implements
-
-    @Override
-    public void onScrollStateChanged(AbsListView absListView, int i) {
-        if (!requireRefresh) {
-            return;
-        }
-        if (absListView.getFirstVisiblePosition() == 0 && absListView.getChildAt(0) != null && absListView.getChildAt(0).getTop() == 0) {
-            requireRefresh = false;
-            int before = adapter.getCount();
-            adapter.refresh();
-            int after = adapter.getCount();
-            int adds = after - before;
-            absListView.setSelection(adds);
-            //absListView.smoothScrollToPositionFromTop(adds, 0);
-            if (adds != 0) {
-                CroutonUtil.showText(this, "" + adds + "件追加しました");
-                //ToastUtil.show(this, "" + adds + "件追加しました");
-            }
-        }
-    }
-
-    @Override
-    public void onScroll(AbsListView absListView, int i, int i2, int i3) {
-
-    }
-
     //User
 
     public void restRefresh() {
@@ -271,7 +244,7 @@ public class ListStatusesActivity extends ActionBarActivity implements StatusLis
                     for (Status status : list) {
                         adapter.add(status);
                     }
-                    requireRefresh = true;
+                    adapter.requireRefresh = true;
                 } catch (Exception e) {
                 }
                 restRefresh();

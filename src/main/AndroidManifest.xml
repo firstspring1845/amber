@@ -26,6 +26,18 @@
             android:name="net.firsp.amber.view.activity.ListStatusesActivity"
             android:label="ListStatus">
         </activity>
+        <activity
+            android:name="net.firsp.amber.view.activity.UserTimelineActivity"
+            android:label="UserTimeline">
+            <intent-filter
+                android:label="@string/intent_open_user_timeline">
+                <action android:name="android.intent.action.VIEW"/>
+                <category android:name="android.intent.category.DEFAULT"/>
+                <category android:name="android.intent.category.BROWSABLE"/>
+                <data android:host="twitter.com" android:pathPattern=".*" android:scheme="http"/>
+                <data android:host="twitter.com" android:pathPattern=".*" android:scheme="https"/>
+            </intent-filter>
+        </activity>
     </application>
 
 </manifest>

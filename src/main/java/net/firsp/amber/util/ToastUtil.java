@@ -5,9 +5,6 @@ import android.os.Handler;
 import android.os.Looper;
 import android.widget.Toast;
 
-/**
- * Created by owner on 2014/07/01.
- */
 public class ToastUtil {
 
     public static void show(final Context context, final String text) {

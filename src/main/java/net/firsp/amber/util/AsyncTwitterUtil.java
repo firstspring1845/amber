@@ -9,9 +9,6 @@ import twitter4j.TwitterListener;
 import twitter4j.TwitterMethod;
 import twitter4j.User;
 
-/**
- * Created by owner on 2014/07/06.
- */
 public class AsyncTwitterUtil {
 
     public static TwitterListener getTwitterListener(final Activity activity) {
