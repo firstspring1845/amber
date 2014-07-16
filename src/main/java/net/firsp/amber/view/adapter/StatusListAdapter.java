@@ -46,6 +46,30 @@ public class StatusListAdapter extends BaseAdapter implements AbsListView.OnScro
     Map<Long, Status> statuses = new ConcurrentHashMap<Long, Status>();
     List<Status> statusList = Collections.synchronizedList(new ArrayList<Status>());
 
+    //返り値は挿入位置 挿入しない場合-1
+    //bisectは神
+    public int addSorted(Status status){
+        if(!statuses.containsKey(status.getId())){
+            synchronized(this){
+                int lo = 0;
+                int hi = statusList.size();
+                while(lo < hi){
+                    int mid = (lo + hi) >> 2;
+                    //降順なので逆
+                    if(statusList.get(mid).getId() > status.getId()){
+                        lo = mid + 1;
+                    }else{
+                        hi = mid;
+                    }
+                }
+                statusList.add(lo, status);
+                statuses.put(status.getId(), status);
+                return lo;
+            }
+        }
+        return -1;
+    }
+
     public void add(Status status) {
         statuses.put(status.getId(), status);
     }
