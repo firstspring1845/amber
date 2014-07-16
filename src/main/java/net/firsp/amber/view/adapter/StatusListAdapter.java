@@ -97,7 +97,7 @@ public class StatusListAdapter extends BaseAdapter implements AbsListView.OnScro
         Status status = statusList.get(i);
         Status original = status.isRetweet() ? status.getRetweetedStatus() : status;
 
-        final String sn = original.getUser().getScreenName();
+        final long id = original.getUser().getId();
         final String url = original.getUser().getOriginalProfileImageURL();
 
         final ViewGroup group = new LinearLayout(activity);
@@ -114,7 +114,7 @@ public class StatusListAdapter extends BaseAdapter implements AbsListView.OnScro
         //setAdjustViewBoundsすると画像が拡大されなくなるんですよ
         //img.setAdjustViewBounds(true);
         //img.setImageResource(R.drawable.unh7);
-        img.setImageBitmap(cache.getIcon(sn, url, new Callback() {
+        img.setImageBitmap(cache.getIcon(id, url, new Callback() {
             @Override
             public void callback(final Object callback) {
                 new UIHandler(){

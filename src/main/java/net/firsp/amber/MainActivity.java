@@ -20,6 +20,7 @@ import android.widget.ListView;
 import net.firsp.amber.account.Account;
 import net.firsp.amber.account.Accounts;
 import net.firsp.amber.util.AsyncTwitterUtil;
+import net.firsp.amber.util.CroutonUtil;
 import net.firsp.amber.util.DialogUtil;
 import net.firsp.amber.util.Serializer;
 import net.firsp.amber.util.ToastUtil;
@@ -27,6 +28,7 @@ import net.firsp.amber.view.adapter.AccountListAdapter;
 import net.firsp.amber.view.dialog.AccountDialogFragment;
 
 import java.io.File;
+import java.util.HashSet;
 
 import twitter4j.AsyncTwitter;
 import twitter4j.Twitter;
@@ -156,7 +158,49 @@ public class MainActivity extends ActionBarActivity {
         if (id == R.id.action_shutdown) {
             throw new RuntimeException("v('ω')");
         }
+        if(id == R.id.action_cache){
+            final ProgressDialog d = DialogUtil.createProgress(this);
+            d.show();
+            new Thread(){
+                @Override
+                public void run(){
+                    try{
+                        long[] ids = Accounts.getInstance().getDefaultAccount().getTwitter().getFriendsIDs(-1).getIDs();
+                        HashSet<String> set = new HashSet<String>();
+                        for (int i = 0; i < ids.length; i++) {
+                            set.add(String.valueOf(ids[i]));
+                        }
+                        File cache = new File(getCacheDir().getAbsoluteFile(), "cache");
+                        long deletebyte = 0;
+                        for (File dir : cache.listFiles()) {
+                            if(!set.contains(dir.getName())){
+                                deletebyte += delete(dir);
+                            }
+                        }
+                        CroutonUtil.showText(MainActivity.this, "" + deletebyte + "バイトのファイルが削除されました");
+                    }catch(Exception e){
+                        CroutonUtil.error(MainActivity.this);
+                    }
+                    d.dismiss();
+                }
+            }.start();
+        }
         return super.onOptionsItemSelected(item);
+    }
+
+    long delete(File dir){
+        long deletebyte = 0;
+        for (File file : dir.listFiles()) {
+            if(file.isFile()){
+                deletebyte += file.length();
+                file.delete();
+            }
+            if(file.isDirectory()){
+                deletebyte += delete(file);
+            }
+        }
+        dir.delete();
+        return deletebyte;
     }
 
     // Call from AccountDialogFragment#updateIcon

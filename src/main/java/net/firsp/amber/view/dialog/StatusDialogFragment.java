@@ -15,6 +15,7 @@ import android.widget.ListView;
 
 import net.firsp.amber.account.Accounts;
 import net.firsp.amber.util.AsyncTwitterUtil;
+import net.firsp.amber.view.activity.UserTimelineActivity;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -43,6 +44,7 @@ public class StatusDialogFragment extends DialogFragment implements AdapterView.
         l.add("リツイートする");
         l.add("ツイートURLを開く");
         l.add("ユーザーページを開く");
+        l.add("ユーザーTLを開く");
         l.add("ツイート内URL情報");
         v.setAdapter(new ArrayAdapter(activity, android.R.layout.simple_list_item_1, l.toArray()));
         v.setOnItemClickListener(this);
@@ -100,6 +102,11 @@ public class StatusDialogFragment extends DialogFragment implements AdapterView.
                 activity.startActivity(intent);
                 break;
             case 5:
+                intent = new Intent(activity, UserTimelineActivity.class);
+                intent.putExtra("screen_name", original.getUser().getScreenName());
+                activity.startActivity(intent);
+                break;
+            case 6:
                 new EntityDialogFragment(activity, status).show(activity.getFragmentManager(), "Entity");
                 break;
         }

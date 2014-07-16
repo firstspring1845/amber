@@ -16,7 +16,11 @@
         android:orderInCategory="100"
         app:showAsAction="never" />
     <item android:id="@+id/action_shutdown"
-        android:title="@string/action_shutdown"
+    android:title="@string/action_shutdown"
+    android:orderInCategory="100"
+    app:showAsAction="never" />
+    <item android:id="@+id/action_cache"
+        android:title="@string/action_cache"
         android:orderInCategory="100"
         app:showAsAction="never" />
 </menu>

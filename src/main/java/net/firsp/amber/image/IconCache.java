@@ -33,12 +33,12 @@ public class IconCache implements Runnable {
     LinkedBlockingQueue<String> urls = new LinkedBlockingQueue<String>();
     LinkedBlockingQueue<Callback> callbacks = new LinkedBlockingQueue<Callback>();
 
-    public Bitmap getIcon(String sn, String url, Callback callback) {
+    public Bitmap getIcon(long id, String url, Callback callback) {
         Bitmap b = memCache.get(url);
         if (b != null) {
             return b;
         }
-        File path = getFilePath(sn, url);
+        File path = getFilePath(id, url);
         try{
             FileInputStream fis = new FileInputStream(path);
             byte[] data = new byte[(int)path.length()];
@@ -83,9 +83,9 @@ public class IconCache implements Runnable {
         return b;
     }
 
-    public File getFilePath(String sn, String url) {
-        File cache = new File(context.getCacheDir().getAbsolutePath(), "cache");
-        File dir = new File(cache, sn);
+    public File getFilePath(long id, String url) {
+        File cache = new File(context.getCacheDir().getAbsoluteFile(), "cache");
+        File dir = new File(cache, String.valueOf(id));
         return new File(dir, getMD5String(url));
     }
 
