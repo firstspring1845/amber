@@ -11,7 +11,7 @@ import android.widget.ListView;
 import net.firsp.amber.account.Account;
 import net.firsp.amber.account.Accounts;
 import net.firsp.amber.util.CroutonUtil;
-import net.firsp.amber.view.StatusListAdapter;
+import net.firsp.amber.view.adapter.StatusListAdapter;
 import net.firsp.amber.view.dialog.StatusDialogFragment;
 
 import java.util.List;

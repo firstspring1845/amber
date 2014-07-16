@@ -8,7 +8,6 @@ import android.support.v7.app.ActionBarActivity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.ListView;
 
@@ -18,11 +17,10 @@ import net.firsp.amber.account.Accounts;
 import net.firsp.amber.filter.NopFilter;
 import net.firsp.amber.filter.StatusFilter;
 import net.firsp.amber.filter.UserFilter;
-import net.firsp.amber.util.CroutonUtil;
 import net.firsp.amber.util.DialogUtil;
 import net.firsp.amber.util.Serializer;
 import net.firsp.amber.util.ToastUtil;
-import net.firsp.amber.view.StatusListAdapter;
+import net.firsp.amber.view.adapter.StatusListAdapter;
 import net.firsp.amber.view.dialog.StatusDialogFragment;
 
 import java.io.File;

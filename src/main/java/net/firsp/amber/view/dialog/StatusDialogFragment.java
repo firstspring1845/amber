@@ -43,6 +43,7 @@ public class StatusDialogFragment extends DialogFragment implements AdapterView.
         l.add("リツイートする");
         l.add("ツイートURLを開く");
         l.add("ユーザーページを開く");
+        l.add("ツイート内URL情報");
         v.setAdapter(new ArrayAdapter(activity, android.R.layout.simple_list_item_1, l.toArray()));
         v.setOnItemClickListener(this);
         d.setContentView(v);
@@ -97,6 +98,9 @@ public class StatusDialogFragment extends DialogFragment implements AdapterView.
 
                 intent = new Intent(Intent.ACTION_VIEW, Uri.parse(sb.toString()));
                 activity.startActivity(intent);
+                break;
+            case 5:
+                new EntityDialogFragment(activity, status).show(activity.getFragmentManager(), "Entity");
                 break;
         }
     }

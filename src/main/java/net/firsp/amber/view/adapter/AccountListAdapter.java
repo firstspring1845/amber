@@ -1,4 +1,4 @@
-package net.firsp.amber.view;
+package net.firsp.amber.view.adapter;
 
 import android.app.Activity;
 import android.os.Handler;

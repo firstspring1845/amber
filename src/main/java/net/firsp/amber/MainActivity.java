@@ -23,7 +23,7 @@ import net.firsp.amber.util.AsyncTwitterUtil;
 import net.firsp.amber.util.DialogUtil;
 import net.firsp.amber.util.Serializer;
 import net.firsp.amber.util.ToastUtil;
-import net.firsp.amber.view.AccountListAdapter;
+import net.firsp.amber.view.adapter.AccountListAdapter;
 import net.firsp.amber.view.dialog.AccountDialogFragment;
 
 import java.io.File;
@@ -51,7 +51,7 @@ public class MainActivity extends ActionBarActivity {
         v.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                account = (Account) ((ListView) adapterView).getItemAtPosition(i);
+                account = (Account) adapterView.getItemAtPosition(i);
                 new AccountDialogFragment(MainActivity.this, account).show(getFragmentManager(), "account");
             }
         });
