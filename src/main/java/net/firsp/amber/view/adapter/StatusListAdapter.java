@@ -48,6 +48,7 @@ public class StatusListAdapter extends BaseAdapter implements AbsListView.OnScro
 
     //返り値は挿入位置 挿入しない場合-1
     //bisectは神
+    //UIスレッドから呼び出し
     public int addSorted(Status status){
         if(!statuses.containsKey(status.getId())){
             synchronized(this){
@@ -64,6 +65,7 @@ public class StatusListAdapter extends BaseAdapter implements AbsListView.OnScro
                 }
                 statusList.add(lo, status);
                 statuses.put(status.getId(), status);
+                notifyDataSetChanged();
                 return lo;
             }
         }
@@ -74,7 +76,7 @@ public class StatusListAdapter extends BaseAdapter implements AbsListView.OnScro
         statuses.put(status.getId(), status);
     }
 
-    private boolean isCurrent() {
+    public static boolean isCurrent() {
         return Thread.currentThread().equals(Looper.getMainLooper().getThread());
     }
 
