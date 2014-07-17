@@ -182,6 +182,9 @@ public class StatusListAdapter extends BaseAdapter implements AbsListView.OnScro
             sb.append(status.getUser().getScreenName());
         }
 
+        sb.append(" via ");
+        sb.append(original.getSource().replaceAll("<.*?>",""));
+
         v.setText(sb.toString());
 
         group.addView(img);
