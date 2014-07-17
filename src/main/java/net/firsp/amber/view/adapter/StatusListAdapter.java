@@ -100,7 +100,11 @@ public class StatusListAdapter extends BaseAdapter implements AbsListView.OnScro
                 }
             });
         }
+    }
 
+    public void clear(){
+        statuses.clear();
+        refresh();
     }
 
     @Override

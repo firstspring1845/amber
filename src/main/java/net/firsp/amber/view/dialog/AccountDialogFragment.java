@@ -16,6 +16,7 @@ import android.widget.ListView;
 import net.firsp.amber.account.Account;
 import net.firsp.amber.account.Accounts;
 import net.firsp.amber.util.AsyncTwitterUtil;
+import net.firsp.amber.view.activity.UserStreamActivity;
 
 import java.util.Arrays;
 
@@ -36,7 +37,7 @@ public class AccountDialogFragment extends DialogFragment implements AdapterView
         Dialog d = new Dialog(activity);
         d.setTitle(account.getScreenName());
         ListView v = new ListView(activity);
-        v.setAdapter(new ArrayAdapter(activity, android.R.layout.simple_list_item_1, Arrays.asList("名前変更", "アイコン変更", "リスト管理", "デフォルトに設定").toArray()));
+        v.setAdapter(new ArrayAdapter(activity, android.R.layout.simple_list_item_1, Arrays.asList("名前変更", "アイコン変更", "リスト管理", "ストリーミング", "デフォルトに設定").toArray()));
         v.setOnItemClickListener(this);
         d.setContentView(v);
         return d;
@@ -56,6 +57,11 @@ public class AccountDialogFragment extends DialogFragment implements AdapterView
                 new TwitterListDialogFragment(activity, account).show(getFragmentManager(), "list");
                 break;
             case 3:
+                Intent intent = new Intent(activity, UserStreamActivity.class);
+                intent.putExtra("id", account.getId());
+                activity.startActivity(intent);
+                break;
+            case 4:
                 Accounts.getInstance().setDefaultAccount(account);
                 break;
         }

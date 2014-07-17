@@ -11,10 +11,13 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.EditText;
 import android.widget.ListView;
 
+import net.firsp.amber.account.Account;
 import net.firsp.amber.account.Accounts;
 import net.firsp.amber.util.AsyncTwitterUtil;
+import net.firsp.amber.util.DialogUtil;
 import net.firsp.amber.view.activity.UserTimelineActivity;
 
 import java.util.ArrayList;
@@ -22,6 +25,8 @@ import java.util.List;
 
 import twitter4j.AsyncTwitter;
 import twitter4j.Status;
+import twitter4j.StatusUpdate;
+import twitter4j.auth.AccessToken;
 
 public class StatusDialogFragment extends DialogFragment implements AdapterView.OnItemClickListener {
 
@@ -39,6 +44,7 @@ public class StatusDialogFragment extends DialogFragment implements AdapterView.
         d.setTitle(status.getText());
         ListView v = new ListView(activity);
         List<String> l = new ArrayList<String>();
+        l.add("リプを送る");
         l.add("ふぁぼる");
         l.add("あんふぁぼする");
         l.add("リツイートする");
@@ -60,12 +66,27 @@ public class StatusDialogFragment extends DialogFragment implements AdapterView.
         final Status original = status.isRetweet() ? status.getRetweetedStatus() : status;
         switch (i) {
             case 0:
-                t.createFavorite(original.getId());
+                final EditText editText = new EditText(activity);
+                editText.setText("@" + original.getUser().getScreenName() + " ");
+                new AlertDialog.Builder(activity)
+                        .setTitle("Reply")
+                        .setView(editText)
+                        .setPositiveButton("発射", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
+                                t.updateStatus(new StatusUpdate(editText.getText().toString()).inReplyToStatusId(original.getId()));
+                            }
+                        })
+                        .create()
+                        .show();
                 break;
             case 1:
-                t.destroyFavorite(original.getId());
+                t.createFavorite(original.getId());
                 break;
             case 2:
+                t.destroyFavorite(original.getId());
+                break;
+            case 3:
                 new AlertDialog.Builder(activity)
                         .setMessage("リツイートしてもいい？")
                         .setPositiveButton("よろしい", new DialogInterface.OnClickListener() {
@@ -83,7 +104,7 @@ public class StatusDialogFragment extends DialogFragment implements AdapterView.
                         .create()
                         .show();
                 break;
-            case 3:
+            case 4:
                 StringBuilder sb = new StringBuilder();
                 sb.append("https://twitter.com/");
                 sb.append(original.getUser().getScreenName());
@@ -93,7 +114,7 @@ public class StatusDialogFragment extends DialogFragment implements AdapterView.
                 Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(sb.toString()));
                 activity.startActivity(intent);
                 break;
-            case 4:
+            case 5:
                 sb = new StringBuilder();
                 sb.append("https://twitter.com/");
                 sb.append(original.getUser().getScreenName());
@@ -101,12 +122,12 @@ public class StatusDialogFragment extends DialogFragment implements AdapterView.
                 intent = new Intent(Intent.ACTION_VIEW, Uri.parse(sb.toString()));
                 activity.startActivity(intent);
                 break;
-            case 5:
+            case 6:
                 intent = new Intent(activity, UserTimelineActivity.class);
                 intent.putExtra("screen_name", original.getUser().getScreenName());
                 activity.startActivity(intent);
                 break;
-            case 6:
+            case 7:
                 new EntityDialogFragment(activity, status).show(activity.getFragmentManager(), "Entity");
                 break;
         }

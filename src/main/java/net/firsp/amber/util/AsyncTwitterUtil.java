@@ -29,6 +29,11 @@ public class AsyncTwitterUtil {
             }
 
             @Override
+            public void updatedStatus(Status status) {
+                CroutonUtil.showText(activity, "ツイートしましたv('ω')");
+            }
+
+            @Override
             public void createdFavorite(Status status) {
                 CroutonUtil.showText(activity, "ふぁぼふぁぼしましたv('ω')");
             }

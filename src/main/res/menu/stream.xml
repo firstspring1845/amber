@@ -1,0 +1,14 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context="net.firsp.amber.MainActivity" >
+    
+    <item android:id="@+id/stream_action_tweet"
+        android:title="@string/action_tweet"
+        android:orderInCategory="100"
+        app:showAsAction="never" />
+    <item android:id="@+id/stream_action_clear"
+        android:title="@string/stream_action_clear"
+        android:orderInCategory="100"
+        app:showAsAction="never" />
+</menu>

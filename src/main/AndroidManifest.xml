@@ -38,6 +38,10 @@
                 <data android:host="twitter.com" android:pathPattern=".*" android:scheme="https"/>
             </intent-filter>
         </activity>
+        <activity
+            android:name="net.firsp.amber.view.activity.UserStreamActivity"
+            android:label="UserStream">
+        </activity>
     </application>
 
 </manifest>
