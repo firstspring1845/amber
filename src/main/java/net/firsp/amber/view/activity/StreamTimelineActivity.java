@@ -1,31 +1,25 @@
 package net.firsp.amber.view.activity;
 
-import android.app.Activity;
-import android.app.AlertDialog;
-import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
-import android.widget.EditText;
 import android.widget.ListView;
 
 import net.firsp.amber.R;
 import net.firsp.amber.account.Account;
 import net.firsp.amber.account.Accounts;
-import net.firsp.amber.util.AsyncTwitterUtil;
+import net.firsp.amber.util.DialogUtil;
 import net.firsp.amber.util.UIHandler;
 import net.firsp.amber.view.adapter.StatusListAdapter;
 import net.firsp.amber.view.dialog.StatusDialogFragment;
 
-import twitter4j.AsyncTwitter;
 import twitter4j.StallWarning;
 import twitter4j.Status;
 import twitter4j.StatusDeletionNotice;
 import twitter4j.StatusListener;
-import twitter4j.StatusUpdate;
 import twitter4j.TwitterStream;
 
 public abstract class StreamTimelineActivity extends ActionBarActivity implements StatusListener {
@@ -101,20 +95,7 @@ public abstract class StreamTimelineActivity extends ActionBarActivity implement
         int id = item.getItemId();
         switch(id){
             case R.id.stream_action_tweet:
-                final EditText editText = new EditText(this);
-                new AlertDialog.Builder(this)
-                        .setTitle("Tweet")
-                        .setView(editText)
-                        .setPositiveButton("発射", new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialogInterface, int i) {
-                                AsyncTwitter t = account.getAsyncTwitter();
-                                t.addListener(AsyncTwitterUtil.getTwitterListener(StreamTimelineActivity.this));
-                                t.updateStatus(editText.getText().toString());
-                            }
-                        })
-                        .create()
-                        .show();
+                DialogUtil.showTweetDialog(this, null);
                 break;
             case R.id.stream_action_clear:
                 adapter.clear(true);

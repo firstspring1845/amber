@@ -11,10 +11,8 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.EditText;
 import android.widget.ListView;
 
-import net.firsp.amber.account.Account;
 import net.firsp.amber.account.Accounts;
 import net.firsp.amber.util.AsyncTwitterUtil;
 import net.firsp.amber.util.DialogUtil;
@@ -25,8 +23,6 @@ import java.util.List;
 
 import twitter4j.AsyncTwitter;
 import twitter4j.Status;
-import twitter4j.StatusUpdate;
-import twitter4j.auth.AccessToken;
 
 public class StatusDialogFragment extends DialogFragment implements AdapterView.OnItemClickListener {
 
@@ -66,19 +62,7 @@ public class StatusDialogFragment extends DialogFragment implements AdapterView.
         final Status original = status.isRetweet() ? status.getRetweetedStatus() : status;
         switch (i) {
             case 0:
-                final EditText editText = new EditText(activity);
-                editText.setText("@" + original.getUser().getScreenName() + " ");
-                new AlertDialog.Builder(activity)
-                        .setTitle("Reply")
-                        .setView(editText)
-                        .setPositiveButton("発射", new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialogInterface, int i) {
-                                t.updateStatus(new StatusUpdate(editText.getText().toString()).inReplyToStatusId(original.getId()));
-                            }
-                        })
-                        .create()
-                        .show();
+                DialogUtil.showTweetDialog(activity, original);
                 break;
             case 1:
                 t.createFavorite(original.getId());

@@ -14,7 +14,6 @@ import android.widget.ListView;
 import net.firsp.amber.view.model.EntityModel;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 
 import twitter4j.MediaEntity;
 import twitter4j.Status;

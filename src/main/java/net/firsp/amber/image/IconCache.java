@@ -3,8 +3,6 @@ package net.firsp.amber.image;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.os.Handler;
-import android.os.Looper;
 import android.util.LruCache;
 
 import net.firsp.amber.R;
@@ -14,9 +12,7 @@ import net.firsp.amber.util.HttpDownloader;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
-import java.io.InputStream;
 import java.security.MessageDigest;
-import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
 public class IconCache implements Runnable {

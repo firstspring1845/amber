@@ -2,7 +2,6 @@ package net.firsp.amber.view.adapter;
 
 import android.app.Activity;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.os.Handler;
 import android.os.Looper;
 import android.view.View;
@@ -13,12 +12,9 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import net.firsp.amber.R;
 import net.firsp.amber.image.IconCache;
 import net.firsp.amber.util.Callback;
 import net.firsp.amber.util.CroutonUtil;
-import net.firsp.amber.util.HttpDownloader;
-import net.firsp.amber.util.ToastUtil;
 import net.firsp.amber.util.UIHandler;
 
 import java.util.ArrayList;
