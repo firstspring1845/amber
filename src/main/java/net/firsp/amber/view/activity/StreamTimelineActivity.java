@@ -76,7 +76,18 @@ public abstract class StreamTimelineActivity extends ActionBarActivity implement
             };
             return;
         }
+        int position = view.getFirstVisiblePosition();
+        int yOffset = 0;
+        if(view.getChildAt(0) != null){
+            yOffset = view.getChildAt(0).getTop();
+        }
         int added = adapter.addSorted(status);
+        if (view.getFirstVisiblePosition() == 0 && view.getChildAt(0) != null && view.getChildAt(0).getTop() == 0){
+            return;
+        }
+        if(position >= added){
+            view.setSelectionFromTop(position + 1, yOffset);
+        }
     }
 
     @Override
@@ -106,7 +117,7 @@ public abstract class StreamTimelineActivity extends ActionBarActivity implement
                         .show();
                 break;
             case R.id.stream_action_clear:
-                adapter.clear();
+                adapter.clear(true);
                 break;
         }
         return true;

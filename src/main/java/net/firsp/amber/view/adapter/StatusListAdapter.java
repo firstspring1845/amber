@@ -102,8 +102,13 @@ public class StatusListAdapter extends BaseAdapter implements AbsListView.OnScro
         }
     }
 
-    public void clear(){
+    public void clear(boolean hold){
         statuses.clear();
+        if(hold){
+            for (Status status : statusList.subList(0,3)) {
+                statuses.put(status.getId(), status);
+            }
+        }
         refresh();
     }
 
