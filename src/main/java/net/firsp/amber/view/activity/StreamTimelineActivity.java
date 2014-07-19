@@ -12,6 +12,7 @@ import net.firsp.amber.R;
 import net.firsp.amber.account.Account;
 import net.firsp.amber.account.Accounts;
 import net.firsp.amber.util.DialogUtil;
+import net.firsp.amber.util.ToastUtil;
 import net.firsp.amber.util.UIHandler;
 import net.firsp.amber.view.adapter.StatusListAdapter;
 import net.firsp.amber.view.dialog.StatusDialogFragment;
@@ -46,6 +47,7 @@ public abstract class StreamTimelineActivity extends ActionBarActivity implement
                 new StatusDialogFragment(StreamTimelineActivity.this, status).show(getFragmentManager(), "Status");
             }
         });
+        view.setOnScrollListener(adapter);
         account = Accounts.getInstance().getAccount(getIntent().getLongExtra("id",0));
         userStream = account.getTwitterStream();
         userStream.addListener(this);
@@ -61,6 +63,13 @@ public abstract class StreamTimelineActivity extends ActionBarActivity implement
     }
 
     public void addStatus(final Status status) {
+        //バックグラウンドでツイ挿入してるとたまに止まるからバックグラウンドでは無条件でTLに挿入しない
+        //後の条件はViewがトップじゃなければ
+        if(!isRunning() || view.getFirstVisiblePosition() != 0 || view.getChildAt(0) == null || view.getChildAt(0).getTop() != 0){
+            adapter.add(status);
+            adapter.requireRefresh = true;
+            return;
+        }
         if (!adapter.isCurrent()) {
             new UIHandler() {
                 @Override
@@ -70,18 +79,7 @@ public abstract class StreamTimelineActivity extends ActionBarActivity implement
             };
             return;
         }
-        int position = view.getFirstVisiblePosition();
-        int yOffset = 0;
-        if(view.getChildAt(0) != null){
-            yOffset = view.getChildAt(0).getTop();
-        }
-        int added = adapter.addSorted(status);
-        if (view.getFirstVisiblePosition() == 0 && view.getChildAt(0) != null && view.getChildAt(0).getTop() == 0){
-            return;
-        }
-        if(position >= added){
-            view.setSelectionFromTop(position + 1, yOffset);
-        }
+        adapter.addSorted(status);
     }
 
     @Override
@@ -102,6 +100,24 @@ public abstract class StreamTimelineActivity extends ActionBarActivity implement
                 break;
         }
         return true;
+    }
+
+    @Override
+    public void onPause(){
+        super.onPause();
+        running = false;
+    }
+
+    @Override
+    public void onResume(){
+        super.onResume();
+        running = true;
+    }
+
+    boolean running;
+
+    public boolean isRunning(){
+        return running;
     }
 
     //StatusListener Implements
