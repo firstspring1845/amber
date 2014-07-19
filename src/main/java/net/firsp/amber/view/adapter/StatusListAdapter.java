@@ -203,9 +203,13 @@ public class StatusListAdapter extends BaseAdapter implements AbsListView.OnScro
     //OnScrollListener Implements
 
     @Override
-    public void onScrollStateChanged(AbsListView absListView, int i) {
+    public void onScrollStateChanged(AbsListView absListView, int state) {
         if(true){
             //流星っぽいの
+            //スクロール中は何もしない
+            if(state != AbsListView.OnScrollListener.SCROLL_STATE_IDLE){
+                return;
+            }
             try{
                 int pos = absListView.getFirstVisiblePosition();
                 int off = absListView.getChildAt(0).getTop();
