@@ -10,6 +10,7 @@ import android.widget.AbsListView;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.ListView;
 import android.widget.TextView;
 
 import net.firsp.amber.image.IconCache;
@@ -203,6 +204,26 @@ public class StatusListAdapter extends BaseAdapter implements AbsListView.OnScro
 
     @Override
     public void onScrollStateChanged(AbsListView absListView, int i) {
+        if(true){
+            //流星っぽいの
+            try{
+                int pos = absListView.getFirstVisiblePosition();
+                int off = absListView.getChildAt(0).getTop();
+                long id = statusList.get(pos).getId();
+                refresh();
+                for (int j = 0; j < statusList.size(); j++) {
+                    Status status = statusList.get(j);
+                    if(status.getId() == id){
+                        pos = j;
+                        break;
+                    }
+                }
+                ((ListView)absListView).setSelectionFromTop(pos, off);
+            }catch(Exception e){
+                //怠慢プログラミング最高ｗ
+            }
+            return;
+        }
         if (!requireRefresh) {
             return;
         }
