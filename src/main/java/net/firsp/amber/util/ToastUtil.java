@@ -8,12 +8,13 @@ import android.widget.Toast;
 public class ToastUtil {
 
     public static void show(final Context context, final String text) {
-        new Handler(Looper.getMainLooper()).post(new Runnable() {
+        new UIHandler(){
             @Override
-            public void run() {
+            public void run(){
                 Toast.makeText(context, text, Toast.LENGTH_SHORT).show();
             }
-        });
+        };
+
     }
 
     public static void error(Context context) {

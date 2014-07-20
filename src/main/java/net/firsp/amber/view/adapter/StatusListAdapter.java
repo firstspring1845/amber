@@ -91,12 +91,13 @@ public class StatusListAdapter extends BaseAdapter implements AbsListView.OnScro
         if (isCurrent()) {
             notifyDataSetChanged();
         } else {
-            new Handler(Looper.getMainLooper()).post(new Runnable() {
+            new UIHandler(){
                 @Override
-                public void run() {
+                public void run(){
                     notifyDataSetChanged();
                 }
-            });
+            };
+
         }
     }
 

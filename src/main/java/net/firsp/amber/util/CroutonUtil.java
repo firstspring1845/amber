@@ -14,16 +14,17 @@ public class CroutonUtil {
     public static final int ALERT = 1;
 
     public static void showText(final Activity activity, final CharSequence charSequence, final int style) {
-        new Handler(Looper.getMainLooper()).post(new Runnable() {
+        new UIHandler(){
             @Override
-            public void run() {
+            public void run(){
                 try {
                     Crouton.showText(activity, charSequence, getStyle(style));
                 } catch (Exception e) {
                     DialogUtil.showException(activity, e);
                 }
             }
-        });
+        };
+
     }
 
     public static Style getStyle(final int type)

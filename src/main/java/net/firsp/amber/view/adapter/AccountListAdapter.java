@@ -9,6 +9,7 @@ import android.widget.BaseAdapter;
 import android.widget.TextView;
 
 import net.firsp.amber.account.Account;
+import net.firsp.amber.util.UIHandler;
 
 public class AccountListAdapter extends BaseAdapter {
 
@@ -22,12 +23,13 @@ public class AccountListAdapter extends BaseAdapter {
 
     public void setAccounts(Account[] accounts) {
         data = accounts;
-        new Handler(Looper.getMainLooper()).post(new Runnable() {
+        new UIHandler(){
             @Override
-            public void run() {
+            public void run(){
                 notifyDataSetChanged();
             }
-        });
+        };
+
     }
 
     @Override

@@ -25,12 +25,13 @@ public class DialogUtil {
             sb.append(el.toString());
             sb.append("\n");
         }
-        new Handler(Looper.getMainLooper()).post(new Runnable() {
+        new UIHandler(){
             @Override
-            public void run() {
+            public void run(){
                 new AlertDialog.Builder(activity).setMessage(sb.toString()).create().show();
             }
-        });
+        };
+
     }
 
     public static ProgressDialog createProgress(Context context) {

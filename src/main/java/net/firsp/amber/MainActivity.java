@@ -24,6 +24,7 @@ import net.firsp.amber.util.CroutonUtil;
 import net.firsp.amber.util.DialogUtil;
 import net.firsp.amber.util.Serializer;
 import net.firsp.amber.util.ToastUtil;
+import net.firsp.amber.util.UIHandler;
 import net.firsp.amber.view.adapter.AccountListAdapter;
 import net.firsp.amber.view.dialog.AccountDialogFragment;
 
@@ -87,16 +88,16 @@ public class MainActivity extends ActionBarActivity {
                         t.setOAuthConsumer("lNO8K0sLqeVagRam1Vr52A", "uW3vxLkLt6uKBGkN2kJDqGv5c8pItYZTi16G0Q3xnik");
                         final RequestToken rt = t.getOAuthRequestToken();
                         d.dismiss();
-                        new Handler(Looper.getMainLooper()).post(new Runnable() {
+                        new UIHandler(){
                             @Override
-                            public void run() {
+                            public void run(){
                                 Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(rt.getAuthorizationURL()));
                                 startActivity(intent);
                                 final EditText editText = new EditText(MainActivity.this);
                                 new AlertDialog.Builder(MainActivity.this)
                                         .setTitle("PINコードを入力して")
                                         .setView(editText)
-                                        .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                                        .setPositiveButton("発射", new DialogInterface.OnClickListener() {
                                             @Override
                                             public void onClick(DialogInterface dialogInterface, int i) {
                                                 d.show();
@@ -124,7 +125,8 @@ public class MainActivity extends ActionBarActivity {
                                         .create()
                                         .show();
                             }
-                        });
+                        };
+
                     } catch (final Exception e) {
                         DialogUtil.showException(MainActivity.this, e);
                     }
