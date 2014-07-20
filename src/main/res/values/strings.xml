@@ -13,6 +13,7 @@
     <string name="list_action_show_member">メンバー表示</string>
     <string name="list_action_streaming">動的取得</string>
     <string name="intent_open_user_timeline">ユーザーTLを開く</string>
+    <string name="intent_dig_up">掘り返し</string>
     <string name="stream_action_clear">TLのクリア</string>
 
 </resources>

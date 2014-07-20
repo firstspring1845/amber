@@ -42,6 +42,20 @@
             android:name="net.firsp.amber.view.activity.UserStreamActivity"
             android:label="UserStream">
         </activity>
+        <activity
+            android:name="net.firsp.amber.view.activity.DigUpActivity"
+            android:label="DigUp">
+            <intent-filter
+                android:label="@string/intent_dig_up">
+                <action android:name="android.intent.action.VIEW"/>
+                <category android:name="android.intent.category.DEFAULT"/>
+                <category android:name="android.intent.category.BROWSABLE"/>
+                <data android:host="twitter.com" android:pathPattern="/.*/status/.*" android:scheme="http"/>
+                <data android:host="twitter.com" android:pathPattern="/.*/status/.*" android:scheme="https"/>
+                <data android:host="twitter.com" android:pathPattern="/.*/statuses/.*" android:scheme="http"/>
+                <data android:host="twitter.com" android:pathPattern="/.*/statuses/.*" android:scheme="https"/>
+            </intent-filter>
+        </activity>
     </application>
 
 </manifest>
