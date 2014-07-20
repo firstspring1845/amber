@@ -13,9 +13,12 @@ import android.support.v7.app.ActionBarActivity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.ListView;
+import android.widget.TextView;
 
 import net.firsp.amber.account.Account;
 import net.firsp.amber.account.Accounts;
@@ -78,60 +81,88 @@ public class MainActivity extends ActionBarActivity {
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
         if (id == R.id.action_authorize) {
-            final ProgressDialog d = DialogUtil.createProgress(this);
-            d.show();
-            new Thread() {
-                public void run() {
-                    try {
-                        final Twitter t = new TwitterFactory().getInstance();
+            TextView text = new TextView(this);
+            text.setText("APIキーを入れてね、空の場合デフォルトになります。");
+            final EditText consumer = new EditText(this);
+            final EditText secret = new EditText(this);
 
-                        t.setOAuthConsumer("lNO8K0sLqeVagRam1Vr52A", "uW3vxLkLt6uKBGkN2kJDqGv5c8pItYZTi16G0Q3xnik");
-                        final RequestToken rt = t.getOAuthRequestToken();
-                        d.dismiss();
-                        new UIHandler(){
-                            @Override
-                            public void run(){
-                                Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(rt.getAuthorizationURL()));
-                                startActivity(intent);
-                                final EditText editText = new EditText(MainActivity.this);
-                                new AlertDialog.Builder(MainActivity.this)
-                                        .setTitle("PINコードを入力して")
-                                        .setView(editText)
-                                        .setPositiveButton("発射", new DialogInterface.OnClickListener() {
+            LinearLayout layout = new LinearLayout(this);
+            layout.setOrientation(LinearLayout.VERTICAL);
+
+            layout.addView(text);
+            layout.addView(consumer);
+            layout.addView(secret);
+
+            new AlertDialog.Builder(this)
+                    .setTitle("APIキー設定")
+                    .setView(layout)
+                    .setPositiveButton("発射",new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialogInterface, int i) {
+                            final ProgressDialog d = DialogUtil.createProgress(MainActivity.this);
+                            d.show();
+
+                            new Thread() {
+                                public void run() {
+                                    try {
+                                        final Twitter t = new TwitterFactory().getInstance();
+                                        if(!"".equals(consumer.getText().toString()) && !"".equals(secret.getText().toString())){
+                                            t.setOAuthConsumer(consumer.getText().toString(), secret.getText().toString());
+                                        }else{
+                                            t.setOAuthConsumer("lNO8K0sLqeVagRam1Vr52A", "uW3vxLkLt6uKBGkN2kJDqGv5c8pItYZTi16G0Q3xnik");
+                                        }
+                                        final RequestToken rt = t.getOAuthRequestToken();
+                                        d.dismiss();
+                                        new UIHandler(){
                                             @Override
-                                            public void onClick(DialogInterface dialogInterface, int i) {
-                                                d.show();
-                                                new Thread() {
-                                                    @Override
-                                                    public void run() {
-                                                        try {
-                                                            AccessToken token = t.getOAuthAccessToken(rt, editText.getText().toString());
-                                                            Account a = new Account("lNO8K0sLqeVagRam1Vr52A", "uW3vxLkLt6uKBGkN2kJDqGv5c8pItYZTi16G0Q3xnik",
-                                                                    token.getToken(),
-                                                                    token.getTokenSecret(),
-                                                                    token.getUserId(),
-                                                                    token.getScreenName());
-                                                            Accounts.getInstance().putAccount(a);
-                                                            Accounts.getInstance().setDefaultAccount(a);
-                                                            adapter.setAccounts(Accounts.getInstance().getAccounts());
-                                                        } catch (Exception e) {
-                                                            DialogUtil.showException(MainActivity.this, e);
-                                                        }
-                                                        d.dismiss();
-                                                    }
-                                                }.start();
+                                            public void run(){
+                                                Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(rt.getAuthorizationURL()));
+                                                startActivity(intent);
+                                                final EditText editText = new EditText(MainActivity.this);
+                                                new AlertDialog.Builder(MainActivity.this)
+                                                        .setTitle("PINコードを入力して")
+                                                        .setView(editText)
+                                                        .setPositiveButton("発射", new DialogInterface.OnClickListener() {
+                                                            @Override
+                                                            public void onClick(DialogInterface dialogInterface, int i) {
+                                                                d.show();
+                                                                new Thread() {
+                                                                    @Override
+                                                                    public void run() {
+                                                                        try {
+                                                                            AccessToken token = t.getOAuthAccessToken(rt, editText.getText().toString());
+                                                                            Account a = new Account("lNO8K0sLqeVagRam1Vr52A", "uW3vxLkLt6uKBGkN2kJDqGv5c8pItYZTi16G0Q3xnik",
+                                                                                    token.getToken(),
+                                                                                    token.getTokenSecret(),
+                                                                                    token.getUserId(),
+                                                                                    token.getScreenName());
+                                                                            Accounts.getInstance().putAccount(a);
+                                                                            Accounts.getInstance().setDefaultAccount(a);
+                                                                            adapter.setAccounts(Accounts.getInstance().getAccounts());
+                                                                        } catch (Exception e) {
+                                                                            DialogUtil.showException(MainActivity.this, e);
+                                                                        }
+                                                                        d.dismiss();
+                                                                    }
+                                                                }.start();
+                                                            }
+                                                        })
+                                                        .create()
+                                                        .show();
                                             }
-                                        })
-                                        .create()
-                                        .show();
-                            }
-                        };
+                                        };
 
-                    } catch (final Exception e) {
-                        DialogUtil.showException(MainActivity.this, e);
-                    }
-                }
-            }.start();
+                                    } catch (final Exception e) {
+                                        DialogUtil.showException(MainActivity.this, e);
+                                    }
+                                }
+                            }.start();
+                        }
+                    })
+                    .create()
+                    .show();
+
+
             return true;
         }
         if (id == R.id.action_backup) {
