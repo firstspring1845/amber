@@ -17,6 +17,7 @@ import net.firsp.amber.util.UIHandler;
 import net.firsp.amber.view.adapter.StatusListAdapter;
 import net.firsp.amber.view.dialog.StatusDialogFragment;
 
+import de.keyboardsurfer.android.widget.crouton.Crouton;
 import twitter4j.StallWarning;
 import twitter4j.Status;
 import twitter4j.StatusDeletionNotice;
@@ -58,6 +59,7 @@ public abstract class StreamTimelineActivity extends ActionBarActivity implement
     @Override
     public void onDestroy() {
         super.onDestroy();
+        Crouton.cancelAllCroutons();
         userStream.shutdown();
         filterStream.shutdown();
     }

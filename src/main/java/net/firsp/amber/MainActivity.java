@@ -30,6 +30,7 @@ import net.firsp.amber.view.dialog.AccountDialogFragment;
 import java.io.File;
 import java.util.HashSet;
 
+import de.keyboardsurfer.android.widget.crouton.Crouton;
 import twitter4j.AsyncTwitter;
 import twitter4j.Twitter;
 import twitter4j.TwitterFactory;
@@ -201,6 +202,11 @@ public class MainActivity extends ActionBarActivity {
         }
         dir.delete();
         return deletebyte;
+    }
+
+    @Override
+    public void onDestroy(){
+        Crouton.cancelAllCroutons();
     }
 
     // Call from AccountDialogFragment#updateIcon

@@ -28,6 +28,7 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
+import de.keyboardsurfer.android.widget.crouton.Crouton;
 import twitter4j.FilterQuery;
 import twitter4j.PagableResponseList;
 import twitter4j.Paging;
@@ -180,6 +181,7 @@ public class ListStatusesActivity extends ActionBarActivity implements StatusLis
     @Override
     public void onDestroy() {
         super.onDestroy();
+        Crouton.cancelAllCroutons();
         try {
             userStream.shutdown();
         } catch (Exception e) {
