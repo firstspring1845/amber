@@ -49,9 +49,8 @@ public class IconCache implements Runnable {
         urls.add(url);
         callbacks.add(callback);
         if(def == null){
-            def = BitmapFactory.decodeResource(context.getResources(), R.drawable.unh7);
             int imgSize = (int) (context.getResources().getDisplayMetrics().densityDpi / 160F * 48);
-            def = Bitmap.createScaledBitmap(def, imgSize, imgSize, true);
+            def = Bitmap.createBitmap(imgSize, imgSize, Bitmap.Config.ARGB_8888);
         }
         return def;
     }
