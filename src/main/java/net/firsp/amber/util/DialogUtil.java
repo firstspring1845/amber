@@ -68,4 +68,11 @@ public class DialogUtil {
         editText.requestFocus();
         editText.setSelection(editText.getText().length());
     }
+
+    public static final DialogInterface.OnClickListener ALERT_DO_NOTHING = new DialogInterface.OnClickListener() {
+        @Override
+        public void onClick(DialogInterface dialogInterface, int i) {
+
+        }
+    };
 }
