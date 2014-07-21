@@ -190,7 +190,8 @@ public class MainActivity extends ActionBarActivity {
             adapter.setAccounts(Accounts.getInstance().getAccounts());
         }
         if (id == R.id.action_shutdown) {
-            throw new RuntimeException("v('ω')");
+            System.exit(0);
+            //throw new RuntimeException("v('ω')");
         }
         if(id == R.id.action_cache){
             final ProgressDialog d = DialogUtil.createProgress(this);
