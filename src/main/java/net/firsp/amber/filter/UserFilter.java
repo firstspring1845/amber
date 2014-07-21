@@ -1,5 +1,6 @@
 package net.firsp.amber.filter;
 
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
@@ -10,26 +11,31 @@ import twitter4j.UserMentionEntity;
 
 public class UserFilter implements StatusFilter {
 
-    Set<Long> follows = Collections.EMPTY_SET;
+    long[] follows = new long[0];
 
-    public UserFilter(Collection<Long> follow) {
-        follows = new HashSet<Long>(follow);
+    public UserFilter(long[] follow) {
+        follows = Arrays.copyOf(follow, follow.length);
+        Arrays.sort(follows);
     }
 
     @Override
     public boolean filter(Status status) {
-        if (!follows.contains(status.getUser().getId())) {
+        if (!contains(status.getUser().getId())) {
             return false;
         }
         if (status.isRetweet()) {
             return true;
         }
         for (UserMentionEntity ume : status.getUserMentionEntities()) {
-            if (!follows.contains(ume.getId())) {
+            if (!contains(ume.getId())) {
                 return false;
             }
         }
         return true;
+    }
+
+    public boolean contains(long id){
+        return Arrays.binarySearch(follows, id) >= 0;
     }
 
 }

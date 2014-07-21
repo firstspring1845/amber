@@ -7,12 +7,4 @@
         android:title="@string/list_action_get_member"
         android:orderInCategory="100"
         app:showAsAction="never" />
-    <item android:id="@+id/list_action_show_member"
-        android:title="@string/list_action_show_member"
-        android:orderInCategory="100"
-        app:showAsAction="never" />
-    <item android:id="@+id/list_action_streaming"
-        android:title="@string/list_action_streaming"
-        android:orderInCategory="100"
-        app:showAsAction="never" />
 </menu>

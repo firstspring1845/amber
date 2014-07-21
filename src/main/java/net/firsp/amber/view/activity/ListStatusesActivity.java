@@ -17,13 +17,18 @@ import net.firsp.amber.account.Accounts;
 import net.firsp.amber.filter.NopFilter;
 import net.firsp.amber.filter.StatusFilter;
 import net.firsp.amber.filter.UserFilter;
+import net.firsp.amber.util.CroutonUtil;
 import net.firsp.amber.util.DialogUtil;
 import net.firsp.amber.util.Serializer;
 import net.firsp.amber.util.ToastUtil;
 import net.firsp.amber.view.adapter.StatusListAdapter;
 import net.firsp.amber.view.dialog.StatusDialogFragment;
 
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
@@ -44,10 +49,8 @@ public class ListStatusesActivity extends ActionBarActivity implements StatusLis
 
     StatusListAdapter adapter;
 
-    //Queue<Status> streamStatus = new ConcurrentLinkedQueue<Status>();
-    boolean requireRefresh = false;
     StatusFilter filter = NopFilter.INSTANCE;
-
+    long[] follows;
 
     long listId;
     Account account;
@@ -77,10 +80,30 @@ public class ListStatusesActivity extends ActionBarActivity implements StatusLis
         listId = intent.getLongExtra("id", 0);
         setTitle(intent.getStringExtra("title"));
         account = Accounts.getInstance().getAccount(intent.getLongExtra("account", 0));
+        final File file = new File(new File(getCacheDir().getAbsolutePath(), "lists"), String.valueOf(listId));
 
+        final ProgressDialog d = DialogUtil.createProgress(this);
+        d.show();
         new Thread() {
             @Override
             public void run() {
+                try{
+                    DataInputStream data = new DataInputStream(new FileInputStream(file));
+                    follows = new long[data.readInt()];
+                    for (int i = 0; i < follows.length; i++) {
+                        follows[i] = data.readLong();
+                    }
+                    data.close();
+                }catch(Exception e){
+                    getListMember();
+                }
+                userStream = account.getTwitterStream();
+                userStream.addListener(ListStatusesActivity.this);
+                filterStream = account.getTwitterStream();
+                filterStream.addListener(ListStatusesActivity.this);
+                filter = new UserFilter(follows);
+                userStream.user();
+                filterStream.filter(new FilterQuery(follows));
                 try {
                     Twitter twitter = account.getTwitter();
                     List<Status> list = twitter.getUserListStatuses(listId, new Paging(1, 200));
@@ -89,8 +112,10 @@ public class ListStatusesActivity extends ActionBarActivity implements StatusLis
                     }
                     adapter.refresh();
                 } catch (Exception e) {
-                    DialogUtil.showException(ListStatusesActivity.this, e);
+                    CroutonUtil.error(ListStatusesActivity.this);
                 }
+                restRefresh();
+                d.dismiss();
             }
         }.start();
     }
@@ -110,70 +135,10 @@ public class ListStatusesActivity extends ActionBarActivity implements StatusLis
             new Thread() {
                 @Override
                 public void run() {
-                    try {
-                        List<User> members = new ArrayList<User>();
-                        Twitter t = account.getTwitter();
-                        long cursor = -1;
-                        while (true) {
-                            PagableResponseList<User> l = t.getUserListMembers(listId, cursor);
-                            cursor = l.getNextCursor();
-                            members.addAll(l);
-                            if (l.isEmpty()) {
-                                break;
-                            }
-                        }
-                        File dir = new File(getCacheDir().getAbsolutePath(), "lists");
-                        dir.mkdirs();
-                        File file = new File(dir, String.valueOf(listId));
-                        Serializer.write(file, members.toArray(new User[members.size()]));
-                    } catch (Exception e) {
-                        ToastUtil.error(ListStatusesActivity.this);
-                    }
+                    getListMember();
                     d.dismiss();
                 }
             }.start();
-        }
-        if (id == R.id.list_action_show_member) {
-            File file = new File(new File(getCacheDir().getAbsolutePath(), "lists"), String.valueOf(listId));
-            Object data = Serializer.read(file);
-            if (data instanceof User[]) {
-                User[] users = (User[]) data;
-                StringBuilder sb = new StringBuilder();
-                for (User user : users) {
-                    sb.append(user.getScreenName());
-                    sb.append("\n");
-                }
-                new AlertDialog.Builder(this)
-                        .setMessage(sb.toString())
-                        .create()
-                        .show();
-            }
-        }
-        if (id == R.id.list_action_streaming) {
-            File file = new File(new File(getCacheDir().getAbsolutePath(), "lists"), String.valueOf(listId));
-            Object data = Serializer.read(file);
-            if (data instanceof User[]) {
-                User[] users = (User[]) data;
-                List<Long> ids = new LinkedList<Long>();
-                long[] idsArray = new long[users.length];
-                for (int i = 0; i < users.length; i++) {
-                    User user = users[i];
-                    ids.add(user.getId());
-                    idsArray[i] = user.getId();
-                }
-                filter = new UserFilter(ids);
-                if (filterStream == null) {
-                    filterStream = account.getTwitterStream();
-                    filterStream.addListener(this);
-                    filterStream.filter(new FilterQuery(idsArray));
-                }
-            }
-            if (userStream == null) {
-                userStream = account.getTwitterStream();
-                userStream.addListener(this);
-                userStream.user();
-            }
-            restRefresh();
         }
         return true;
     }
@@ -251,5 +216,35 @@ public class ListStatusesActivity extends ActionBarActivity implements StatusLis
             }
         };
         rest.start();
+    }
+
+    public void getListMember(){
+        try {
+            List<User> members = new ArrayList<User>();
+            Twitter t = account.getTwitter();
+            long cursor = -1;
+            while (true) {
+                PagableResponseList<User> l = t.getUserListMembers(listId, cursor);
+                cursor = l.getNextCursor();
+                members.addAll(l);
+                if (l.isEmpty()) {
+                    break;
+                }
+            }
+            File dir = new File(getCacheDir().getAbsolutePath(), "lists");
+            dir.mkdirs();
+            File file = new File(dir, String.valueOf(listId));
+            DataOutputStream data = new DataOutputStream(new FileOutputStream(file));
+            data.writeInt(members.size());
+            follows = new long[members.size()];
+            for (int i = 0; i < members.size(); i++) {
+                User user = members.get(i);
+                data.writeLong(user.getId());
+                follows[i] = user.getId();
+            }
+            data.close();
+        } catch (Exception e) {
+            CroutonUtil.error(ListStatusesActivity.this);
+        }
     }
 }
