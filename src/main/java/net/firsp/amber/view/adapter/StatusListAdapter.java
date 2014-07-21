@@ -18,6 +18,7 @@ import net.firsp.amber.util.Callback;
 import net.firsp.amber.util.CroutonUtil;
 import net.firsp.amber.util.UIHandler;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
@@ -174,16 +175,7 @@ public class StatusListAdapter extends BaseAdapter implements AbsListView.OnScro
 
         sb.append("\n");
 
-        Calendar cal = Calendar.getInstance();
-        cal.setTime(status.getCreatedAt());
-
-        sb.append(String.format("%04d/%02d/%02d %02d:%02d:%02d",
-                cal.get(Calendar.YEAR),
-                cal.get(Calendar.MONTH) + 1,
-                cal.get(Calendar.DATE),
-                cal.get(Calendar.HOUR_OF_DAY),
-                cal.get(Calendar.MINUTE),
-                cal.get(Calendar.SECOND)));
+        sb.append(new SimpleDateFormat("yyyy/MM/dd HH:mm:ss").format(status.getCreatedAt()));
 
         if (status != original) {
             sb.append(" RT:");
