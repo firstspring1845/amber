@@ -106,11 +106,17 @@ public class MainActivity extends ActionBarActivity {
                                 public void run() {
                                     try {
                                         final Twitter t = new TwitterFactory().getInstance();
+                                        final StringBuilder consumerKey = new StringBuilder();
+                                        final StringBuilder consumerSecret = new StringBuilder();
                                         if(!"".equals(consumer.getText().toString()) && !"".equals(secret.getText().toString())){
-                                            t.setOAuthConsumer(consumer.getText().toString(), secret.getText().toString());
+                                            consumerKey.append(consumer.getText());
+                                            consumerSecret.append(secret.getText());
+
                                         }else{
-                                            t.setOAuthConsumer("lNO8K0sLqeVagRam1Vr52A", "uW3vxLkLt6uKBGkN2kJDqGv5c8pItYZTi16G0Q3xnik");
+                                            consumerKey.append("lNO8K0sLqeVagRam1Vr52A");
+                                            consumerSecret.append("uW3vxLkLt6uKBGkN2kJDqGv5c8pItYZTi16G0Q3xnik");
                                         }
+                                        t.setOAuthConsumer(consumerKey.toString(), consumerSecret.toString());
                                         final RequestToken rt = t.getOAuthRequestToken();
                                         d.dismiss();
                                         new UIHandler(){
@@ -131,7 +137,8 @@ public class MainActivity extends ActionBarActivity {
                                                                     public void run() {
                                                                         try {
                                                                             AccessToken token = t.getOAuthAccessToken(rt, editText.getText().toString());
-                                                                            Account a = new Account("lNO8K0sLqeVagRam1Vr52A", "uW3vxLkLt6uKBGkN2kJDqGv5c8pItYZTi16G0Q3xnik",
+                                                                            Account a = new Account(consumerKey.toString(),
+                                                                                    consumerSecret.toString(),
                                                                                     token.getToken(),
                                                                                     token.getTokenSecret(),
                                                                                     token.getUserId(),
