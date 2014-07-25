@@ -81,7 +81,6 @@ public class StatusListAdapter extends BaseAdapter implements AbsListView.OnScro
 
     public void refresh() {
         List<Status> list = new ArrayList<Status>(statuses.values());
-        Collections.sort(list, (lhs, rhs) -> Long.valueOf(lhs.getId()).compareTo(rhs.getId()));
         Collections.sort(list);
         Collections.reverse(list);
         statusList = Collections.synchronizedList(list);
