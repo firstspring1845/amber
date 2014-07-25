@@ -11,7 +11,6 @@ import net.firsp.amber.util.UIHandler;
 
 import twitter4j.Status;
 import twitter4j.Twitter;
-import twitter4j.conf.ConfigurationBuilder;
 
 public class DigUpActivity extends Activity {
 
@@ -27,28 +26,28 @@ public class DigUpActivity extends Activity {
         final ProgressDialog d = DialogUtil.createProgress(this);
         d.show();
 
-        try{
-            long id = Long.parseLong(intent.getData().toString().replaceAll(".*/",""));
+        try {
+            long id = Long.parseLong(intent.getData().toString().replaceAll(".*/", ""));
             Accounts.initialize(this);
-            new Thread(()->{
-                try{
+            new Thread(() -> {
+                try {
                     Twitter t = Accounts.getInstance().getDefaultAccount().getTwitter();
                     Status s = t.showStatus(id);
                     //とりあえず削除を試みる
-                    try{
+                    try {
                         t.destroyStatus(s.getCurrentUserRetweetId());
-                    }catch(Exception e){
+                    } catch (Exception e) {
                     }
                     t.retweetStatus(id);
-                }catch(Exception e){
+                } catch (Exception e) {
                     DialogUtil.showException(this, e);
                 }
-                new UIHandler().post(()->{
+                new UIHandler().post(() -> {
                     d.dismiss();
                     finish();
                 });
             }).start();
-        }catch(Exception e){
+        } catch (Exception e) {
             finish();
         }
     }

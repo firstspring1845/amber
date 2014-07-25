@@ -4,15 +4,12 @@ import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
-import android.widget.AdapterView;
 import android.widget.ListView;
 
 import net.firsp.amber.R;
 import net.firsp.amber.account.Account;
 import net.firsp.amber.account.Accounts;
 import net.firsp.amber.util.DialogUtil;
-import net.firsp.amber.util.ToastUtil;
 import net.firsp.amber.util.UIHandler;
 import net.firsp.amber.view.adapter.StatusListAdapter;
 import net.firsp.amber.view.dialog.StatusDialogFragment;
@@ -46,7 +43,7 @@ public abstract class StreamTimelineActivity extends ActionBarActivity implement
             new StatusDialogFragment(this, status).show(getFragmentManager(), "Status");
         });
         view.setOnScrollListener(adapter);
-        account = Accounts.getInstance().getAccount(getIntent().getLongExtra("id",0));
+        account = Accounts.getInstance().getAccount(getIntent().getLongExtra("id", 0));
         userStream = account.getTwitterStream();
         userStream.addListener(this);
         filterStream = account.getTwitterStream();
@@ -64,13 +61,13 @@ public abstract class StreamTimelineActivity extends ActionBarActivity implement
     public void addStatus(final Status status) {
         //バックグラウンドでツイ挿入してるとたまに止まるからバックグラウンドでは無条件でTLに挿入しない
         //後の条件はViewがトップじゃなければ
-        if(!isRunning() || view.getFirstVisiblePosition() != 0 || view.getChildAt(0) == null || view.getChildAt(0).getTop() != 0){
+        if (!isRunning() || view.getFirstVisiblePosition() != 0 || view.getChildAt(0) == null || view.getChildAt(0).getTop() != 0) {
             adapter.add(status);
             adapter.requireRefresh = true;
             return;
         }
         if (!adapter.isCurrent()) {
-            new UIHandler().post(()->{
+            new UIHandler().post(() -> {
                 addStatus(status);
             });
             return;
@@ -85,9 +82,9 @@ public abstract class StreamTimelineActivity extends ActionBarActivity implement
     }
 
     @Override
-    public boolean onOptionsItemSelected(MenuItem item){
+    public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
-        switch(id){
+        switch (id) {
             case R.id.stream_action_tweet:
                 DialogUtil.showTweetDialog(this, null);
                 break;
@@ -99,20 +96,20 @@ public abstract class StreamTimelineActivity extends ActionBarActivity implement
     }
 
     @Override
-    public void onPause(){
+    public void onPause() {
         super.onPause();
         running = false;
     }
 
     @Override
-    public void onResume(){
+    public void onResume() {
         super.onResume();
         running = true;
     }
 
     boolean running;
 
-    public boolean isRunning(){
+    public boolean isRunning() {
         return running;
     }
 

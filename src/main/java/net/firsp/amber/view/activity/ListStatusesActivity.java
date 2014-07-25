@@ -1,14 +1,11 @@
 package net.firsp.amber.view.activity;
 
-import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
-import android.widget.AdapterView;
 import android.widget.ListView;
 
 import net.firsp.amber.R;
@@ -19,8 +16,6 @@ import net.firsp.amber.filter.StatusFilter;
 import net.firsp.amber.filter.UserFilter;
 import net.firsp.amber.util.CroutonUtil;
 import net.firsp.amber.util.DialogUtil;
-import net.firsp.amber.util.Serializer;
-import net.firsp.amber.util.ToastUtil;
 import net.firsp.amber.view.adapter.StatusListAdapter;
 import net.firsp.amber.view.dialog.StatusDialogFragment;
 
@@ -30,7 +25,6 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.util.ArrayList;
-import java.util.LinkedList;
 import java.util.List;
 
 import de.keyboardsurfer.android.widget.crouton.Crouton;
@@ -81,37 +75,37 @@ public class ListStatusesActivity extends ActionBarActivity implements StatusLis
 
         ProgressDialog d = DialogUtil.createProgress(this);
         d.show();
-       new Thread(()->{
-           try {
-               DataInputStream data = new DataInputStream(new FileInputStream(file));
-               follows = new long[data.readInt()];
-               for (int i = 0; i < follows.length; i++) {
-                   follows[i] = data.readLong();
-               }
-               data.close();
-           } catch (Exception e) {
-               getListMember();
-           }
-           userStream = account.getTwitterStream();
-           userStream.addListener(ListStatusesActivity.this);
-           filterStream = account.getTwitterStream();
-           filterStream.addListener(ListStatusesActivity.this);
-           filter = new UserFilter(follows);
-           userStream.user();
-           filterStream.filter(new FilterQuery(follows));
-           try {
-               Twitter twitter = account.getTwitter();
-               List<Status> list = twitter.getUserListStatuses(listId, new Paging(1, 200));
-               for (Status status : list) {
-                   adapter.add(status);
-               }
-               adapter.refresh();
-           } catch (Exception e) {
-               CroutonUtil.error(this);
-           }
-           restRefresh();
-           d.dismiss();
-       }).start();
+        new Thread(() -> {
+            try {
+                DataInputStream data = new DataInputStream(new FileInputStream(file));
+                follows = new long[data.readInt()];
+                for (int i = 0; i < follows.length; i++) {
+                    follows[i] = data.readLong();
+                }
+                data.close();
+            } catch (Exception e) {
+                getListMember();
+            }
+            userStream = account.getTwitterStream();
+            userStream.addListener(ListStatusesActivity.this);
+            filterStream = account.getTwitterStream();
+            filterStream.addListener(ListStatusesActivity.this);
+            filter = new UserFilter(follows);
+            userStream.user();
+            filterStream.filter(new FilterQuery(follows));
+            try {
+                Twitter twitter = account.getTwitter();
+                List<Status> list = twitter.getUserListStatuses(listId, new Paging(1, 200));
+                for (Status status : list) {
+                    adapter.add(status);
+                }
+                adapter.refresh();
+            } catch (Exception e) {
+                CroutonUtil.error(this);
+            }
+            restRefresh();
+            d.dismiss();
+        }).start();
     }
 
     @Override
@@ -126,7 +120,7 @@ public class ListStatusesActivity extends ActionBarActivity implements StatusLis
         if (id == R.id.list_action_get_member) {
             ProgressDialog d = DialogUtil.createProgress(this);
             d.show();
-            new Thread(()->{
+            new Thread(() -> {
                 getListMember();
                 d.dismiss();
             }).start();
@@ -190,7 +184,7 @@ public class ListStatusesActivity extends ActionBarActivity implements StatusLis
     //User
 
     public void restRefresh() {
-        rest = new Thread(()->{
+        rest = new Thread(() -> {
             try {
                 Thread.sleep(30000);
                 Twitter twitter = account.getTwitter();

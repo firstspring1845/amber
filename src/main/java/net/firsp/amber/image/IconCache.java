@@ -5,7 +5,6 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.util.LruCache;
 
-import net.firsp.amber.R;
 import net.firsp.amber.util.Callback;
 import net.firsp.amber.util.HttpDownloader;
 
@@ -17,7 +16,7 @@ import java.util.concurrent.LinkedBlockingQueue;
 
 public class IconCache implements Runnable {
 
-    public IconCache(Context context){
+    public IconCache(Context context) {
         this.context = context;
         new Thread(this).start();
     }
@@ -35,20 +34,20 @@ public class IconCache implements Runnable {
             return b;
         }
         File path = getFilePath(id, url);
-        try{
+        try {
             FileInputStream fis = new FileInputStream(path);
-            byte[] data = new byte[(int)path.length()];
+            byte[] data = new byte[(int) path.length()];
             fis.read(data);
             b = putIcon(path, url, data, false);
-            if(b != null){
+            if (b != null) {
                 return b;
             }
-        }catch(Exception e){
+        } catch (Exception e) {
         }
         paths.add(path);
         urls.add(url);
         callbacks.add(callback);
-        if(def == null){
+        if (def == null) {
             int imgSize = (int) (context.getResources().getDisplayMetrics().densityDpi / 160F * 48);
             def = Bitmap.createBitmap(imgSize, imgSize, Bitmap.Config.ARGB_8888);
         }
@@ -62,7 +61,7 @@ public class IconCache implements Runnable {
         b = Bitmap.createScaledBitmap(b, imgSize, imgSize, true);
         memCache.put(url, b);
         FileOutputStream fos = null;
-        if(putLocal){
+        if (putLocal) {
             try {
                 path.getParentFile().mkdirs();
                 fos = new FileOutputStream(path);
@@ -98,23 +97,23 @@ public class IconCache implements Runnable {
     }
 
     @Override
-    public void run(){
-        while (true){
-            try{
+    public void run() {
+        while (true) {
+            try {
                 File path = paths.take();
                 String url = urls.take();
                 Callback callback = callbacks.take();
                 Bitmap b = memCache.get(url);
-                if(b == null){
+                if (b == null) {
                     byte[] data = HttpDownloader.download(url);
                     if (data != null) {
                         b = putIcon(path, url, data, true);
                     }
                 }
-                if(b != null){
+                if (b != null) {
                     callback.callback(b);
                 }
-            }catch(Exception e){
+            } catch (Exception e) {
             }
         }
     }

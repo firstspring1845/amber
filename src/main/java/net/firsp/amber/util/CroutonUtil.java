@@ -1,8 +1,6 @@
 package net.firsp.amber.util;
 
 import android.app.Activity;
-import android.os.Handler;
-import android.os.Looper;
 
 import de.keyboardsurfer.android.widget.crouton.Configuration;
 import de.keyboardsurfer.android.widget.crouton.Crouton;
@@ -14,26 +12,22 @@ public class CroutonUtil {
     public static final int ALERT = 1;
 
     public static void showText(Activity activity, CharSequence charSequence, int style) {
-        new UIHandler().post(()->{
+        new UIHandler().post(() -> {
             Crouton.showText(activity, charSequence, getStyle(style));
         });
     }
 
-    public static Style getStyle(int type)
-    {
+    public static Style getStyle(int type) {
         Configuration.Builder conf = new Configuration.Builder();
         conf.setDuration(1000);
         Style.Builder style = new Style.Builder();
         style.setConfiguration(conf.build());
-        switch(type)
-        {
-            case INFO:
-            {
+        switch (type) {
+            case INFO: {
                 style.setBackgroundColorValue(Style.holoBlueLight);
                 break;
             }
-            case ALERT:
-            {
+            case ALERT: {
                 style.setBackgroundColorValue(Style.holoRedLight);
                 break;
             }
@@ -41,11 +35,11 @@ public class CroutonUtil {
         return style.build();
     }
 
-    public static void showText(Activity activity, CharSequence charSequence){
+    public static void showText(Activity activity, CharSequence charSequence) {
         showText(activity, charSequence, INFO);
     }
 
-    public static void error(Activity activity){
+    public static void error(Activity activity) {
         showText(activity, "何かがおかしいです:(", ALERT);
     }
 

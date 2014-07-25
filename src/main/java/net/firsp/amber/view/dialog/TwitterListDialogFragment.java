@@ -60,7 +60,7 @@ public class TwitterListDialogFragment extends DialogFragment implements Adapter
         if (i == lists.length) {
             ProgressDialog d = DialogUtil.createProgress(activity);
             d.show();
-            new Thread(()->{
+            new Thread(() -> {
                 try {
                     UserList[] arr = account.getTwitter().getUserLists(account.getId()).toArray(new UserList[0]);
                     File accountDir = account.getAccountDir(activity);

@@ -2,7 +2,6 @@ package net.firsp.amber.view.adapter;
 
 import android.app.Activity;
 import android.graphics.Bitmap;
-import android.os.Handler;
 import android.os.Looper;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,15 +13,12 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import net.firsp.amber.image.IconCache;
-import net.firsp.amber.util.Callback;
 import net.firsp.amber.util.CroutonUtil;
 import net.firsp.amber.util.UIHandler;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;

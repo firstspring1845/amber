@@ -2,20 +2,14 @@ package net.firsp.amber;
 
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
-import android.os.Handler;
-import android.os.Looper;
 import android.support.v7.app.ActionBarActivity;
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.AdapterView;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.ListView;
@@ -56,7 +50,7 @@ public class MainActivity extends ActionBarActivity {
         adapter = new AccountListAdapter(this);
         adapter.setAccounts(Accounts.getInstance().getAccounts());
         v.setAdapter(adapter);
-        v.setOnItemClickListener((adapterView, view, i, l)->{
+        v.setOnItemClickListener((adapterView, view, i, l) -> {
             account = (Account) adapterView.getItemAtPosition(i);
             new AccountDialogFragment(this, account).show(getFragmentManager(), "account");
         });
@@ -90,36 +84,36 @@ public class MainActivity extends ActionBarActivity {
             new AlertDialog.Builder(this)
                     .setTitle("APIキー設定")
                     .setView(layout)
-                    .setPositiveButton("発射",(di,i)->{
+                    .setPositiveButton("発射", (di, i) -> {
                         ProgressDialog d = DialogUtil.createProgress(this);
                         d.show();
 
-                        new Thread(()->{
+                        new Thread(() -> {
                             try {
                                 Twitter t = new TwitterFactory().getInstance();
                                 StringBuilder consumerKey = new StringBuilder();
                                 StringBuilder consumerSecret = new StringBuilder();
-                                if(!"".equals(consumer.getText().toString()) && !"".equals(secret.getText().toString())){
+                                if (!"".equals(consumer.getText().toString()) && !"".equals(secret.getText().toString())) {
                                     consumerKey.append(consumer.getText());
                                     consumerSecret.append(secret.getText());
 
-                                }else{
+                                } else {
                                     consumerKey.append("lNO8K0sLqeVagRam1Vr52A");
                                     consumerSecret.append("uW3vxLkLt6uKBGkN2kJDqGv5c8pItYZTi16G0Q3xnik");
                                 }
                                 t.setOAuthConsumer(consumerKey.toString(), consumerSecret.toString());
                                 RequestToken rt = t.getOAuthRequestToken();
                                 d.dismiss();
-                                handler.post(()->{
+                                handler.post(() -> {
                                     Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(rt.getAuthorizationURL()));
                                     startActivity(intent);
                                     final EditText editText = new EditText(this);
                                     new AlertDialog.Builder(this)
                                             .setTitle("PINコードを入力して")
                                             .setView(editText)
-                                            .setPositiveButton("発射", (di_,i_)->{
+                                            .setPositiveButton("発射", (di_, i_) -> {
                                                 d.show();
-                                                new Thread(()->{
+                                                new Thread(() -> {
                                                     try {
                                                         AccessToken token = t.getOAuthAccessToken(rt, editText.getText().toString());
                                                         Account a = new Account(consumerKey.toString(),
@@ -167,9 +161,9 @@ public class MainActivity extends ActionBarActivity {
                     Accounts.getInstance().putAccount(account1);
                 }
             }
-            if(Accounts.getInstance().getDefaultAccount() == null){
+            if (Accounts.getInstance().getDefaultAccount() == null) {
                 Account[] accounts = Accounts.getInstance().getAccounts();
-                if(accounts.length != 0){
+                if (accounts.length != 0) {
                     Accounts.getInstance().setDefaultAccount(accounts[0]);
                 }
             }
@@ -178,11 +172,11 @@ public class MainActivity extends ActionBarActivity {
         if (id == R.id.action_shutdown) {
             android.os.Process.killProcess(android.os.Process.myPid());
         }
-        if(id == R.id.action_cache){
+        if (id == R.id.action_cache) {
             ProgressDialog d = DialogUtil.createProgress(this);
             d.show();
-            new Thread(()->{
-                try{
+            new Thread(() -> {
+                try {
                     long[] ids = Accounts.getInstance().getDefaultAccount().getTwitter().getFriendsIDs(-1).getIDs();
                     HashSet<String> set = new HashSet<String>();
                     for (int i = 0; i < ids.length; i++) {
@@ -191,12 +185,12 @@ public class MainActivity extends ActionBarActivity {
                     File cache = new File(getCacheDir().getAbsoluteFile(), "cache");
                     long deletebyte = 0;
                     for (File dir : cache.listFiles()) {
-                        if(!set.contains(dir.getName())){
+                        if (!set.contains(dir.getName())) {
                             deletebyte += delete(dir);
                         }
                     }
                     CroutonUtil.showText(this, "" + deletebyte + "バイトのファイルが削除されました");
-                }catch(Exception e){
+                } catch (Exception e) {
                     CroutonUtil.error(this);
                 }
                 d.dismiss();
@@ -205,14 +199,14 @@ public class MainActivity extends ActionBarActivity {
         return super.onOptionsItemSelected(item);
     }
 
-    long delete(File dir){
+    long delete(File dir) {
         long deletebyte = 0;
         for (File file : dir.listFiles()) {
-            if(file.isFile()){
+            if (file.isFile()) {
                 deletebyte += file.length();
                 file.delete();
             }
-            if(file.isDirectory()){
+            if (file.isDirectory()) {
                 deletebyte += delete(file);
             }
         }
@@ -221,18 +215,17 @@ public class MainActivity extends ActionBarActivity {
     }
 
     @Override
-    public void onDestroy(){
+    public void onDestroy() {
         Crouton.cancelAllCroutons();
     }
 
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
-        if(keyCode== KeyEvent.KEYCODE_BACK){
+        if (keyCode == KeyEvent.KEYCODE_BACK) {
             android.os.Process.killProcess(android.os.Process.myPid());
         }
         return false;
     }
-
 
 
     // Call from AccountDialogFragment#updateIcon

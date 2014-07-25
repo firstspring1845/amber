@@ -1,10 +1,6 @@
 package net.firsp.amber.filter;
 
 import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.Set;
 
 import twitter4j.Status;
 import twitter4j.UserMentionEntity;
@@ -34,7 +30,7 @@ public class UserFilter implements StatusFilter {
         return true;
     }
 
-    public boolean contains(long id){
+    public boolean contains(long id) {
         return Arrays.binarySearch(follows, id) >= 0;
     }
 
