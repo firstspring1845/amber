@@ -10,6 +10,7 @@ import android.os.Environment;
 import android.os.Handler;
 import android.os.Looper;
 import android.support.v7.app.ActionBarActivity;
+import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -197,8 +198,7 @@ public class MainActivity extends ActionBarActivity {
             adapter.setAccounts(Accounts.getInstance().getAccounts());
         }
         if (id == R.id.action_shutdown) {
-            System.exit(0);
-            //throw new RuntimeException("v('ω')");
+            android.os.Process.killProcess(android.os.Process.myPid());
         }
         if(id == R.id.action_cache){
             final ProgressDialog d = DialogUtil.createProgress(this);
@@ -249,6 +249,16 @@ public class MainActivity extends ActionBarActivity {
     public void onDestroy(){
         Crouton.cancelAllCroutons();
     }
+
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        if(keyCode== KeyEvent.KEYCODE_BACK){
+            android.os.Process.killProcess(android.os.Process.myPid());
+        }
+        return false;
+    }
+
+
 
     // Call from AccountDialogFragment#updateIcon
     @Override
