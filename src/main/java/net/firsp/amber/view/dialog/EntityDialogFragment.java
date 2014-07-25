@@ -9,9 +9,11 @@ import android.os.Bundle;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
+import net.firsp.amber.util.FuncUtil;
 import net.firsp.amber.view.model.EntityModel;
 
 import java.util.ArrayList;
+import java.util.Collections;
 
 import twitter4j.MediaEntity;
 import twitter4j.Status;
@@ -33,20 +35,14 @@ public class EntityDialogFragment extends DialogFragment {
         Dialog d = new Dialog(activity);
         d.setTitle("情報");
 
-        ArrayList<EntityModel> list = new ArrayList<EntityModel>();
-        list.add(new EntityModel(status.getUser()));
-        for (UserMentionEntity userMentionEntity : status.getUserMentionEntities()) {
-            list.add(new EntityModel(userMentionEntity));
-        }
-        for (URLEntity urlEntity : status.getURLEntities()) {
-            list.add(new EntityModel(urlEntity));
-        }
-        for (MediaEntity mediaEntity : status.getMediaEntities()) {
-            list.add(new EntityModel(mediaEntity));
-        }
+        ArrayList<Object> list = new ArrayList<Object>();
+        list.add(status.getUser());
+        Collections.addAll(list, status.getUserMentionEntities());
+        Collections.addAll(list, status.getURLEntities());
+        Collections.addAll(list, status.getMediaEntities());
 
         ListView v = new ListView(activity);
-        v.setAdapter(new ArrayAdapter(activity, android.R.layout.simple_list_item_1, list.toArray()));
+        v.setAdapter(new ArrayAdapter(activity, android.R.layout.simple_list_item_1, FuncUtil.map(list, (a)->new EntityModel(a)).toArray()));
         v.setOnItemClickListener((adapterView, view, i, l) -> {
             dismiss();
             EntityModel m = (EntityModel) adapterView.getItemAtPosition(i);
