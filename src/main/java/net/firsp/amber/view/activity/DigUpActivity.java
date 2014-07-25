@@ -20,7 +20,7 @@ public class DigUpActivity extends Activity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setTheme(android.R.style.Theme_Translucent);
+        setTheme(android.R.style.Theme_Holo_Panel);
 
         Intent intent = getIntent();
 
@@ -41,6 +41,7 @@ public class DigUpActivity extends Activity {
                     }
                     t.retweetStatus(id);
                 }catch(Exception e){
+                    DialogUtil.showException(this, e);
                 }
                 new UIHandler().post(()->{
                     d.dismiss();
