@@ -36,6 +36,7 @@ public class EntityDialogFragment extends DialogFragment {
         d.setTitle("情報");
 
         ArrayList<EntityModel> list = new ArrayList<EntityModel>();
+        list.add(new EntityModel(status.getUser()));
         for (UserMentionEntity userMentionEntity : status.getUserMentionEntities()) {
             list.add(new EntityModel(userMentionEntity));
         }

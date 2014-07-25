@@ -2,6 +2,7 @@ package net.firsp.amber.view.model;
 
 import twitter4j.MediaEntity;
 import twitter4j.URLEntity;
+import twitter4j.User;
 import twitter4j.UserMentionEntity;
 
 public class EntityModel {
@@ -10,15 +11,20 @@ public class EntityModel {
     String url;
 
     public EntityModel(Object entity) {
-        if (entity instanceof UserMentionEntity) {
-            UserMentionEntity userMentionEntity = (UserMentionEntity) entity;
+        if (entity instanceof User || entity instanceof UserMentionEntity) {
+            String sn;
+            if (entity instanceof User) {
+                sn = ((User) entity).getScreenName();
+            } else {
+                sn = ((UserMentionEntity) entity).getScreenName();
+            }
             StringBuilder sb = new StringBuilder();
             sb.append("@");
-            sb.append(userMentionEntity.getScreenName());
+            sb.append(sn);
             str = sb.toString();
             sb = new StringBuilder();
             sb.append("https://twitter.com/");
-            sb.append(userMentionEntity.getScreenName());
+            sb.append(sn);
             url = sb.toString();
         } else if (entity instanceof URLEntity) {
             URLEntity urlEntity = (URLEntity) entity;
