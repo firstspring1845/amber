@@ -66,12 +66,9 @@ public class ListStatusesActivity extends ActionBarActivity implements StatusLis
         adapter = new StatusListAdapter(this);
         v.setAdapter(adapter);
         v.setOnScrollListener(adapter);
-        v.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                Status status = (Status) adapter.getItem(i);
-                new StatusDialogFragment(ListStatusesActivity.this, status).show(getFragmentManager(), "Status");
-            }
+        v.setOnItemClickListener((adapterView, view, i, l) -> {
+            Status status = (Status) adapter.getItem(i);
+            new StatusDialogFragment(ListStatusesActivity.this, status).show(getFragmentManager(), "Status");
         });
         setContentView(v);
 
@@ -80,44 +77,41 @@ public class ListStatusesActivity extends ActionBarActivity implements StatusLis
         listId = intent.getLongExtra("id", 0);
         setTitle(intent.getStringExtra("title"));
         account = Accounts.getInstance().getAccount(intent.getLongExtra("account", 0));
-        final File file = new File(new File(getCacheDir().getAbsolutePath(), "lists"), String.valueOf(listId));
+        File file = new File(new File(getCacheDir().getAbsolutePath(), "lists"), String.valueOf(listId));
 
-        final ProgressDialog d = DialogUtil.createProgress(this);
+        ProgressDialog d = DialogUtil.createProgress(this);
         d.show();
-        new Thread() {
-            @Override
-            public void run() {
-                try{
-                    DataInputStream data = new DataInputStream(new FileInputStream(file));
-                    follows = new long[data.readInt()];
-                    for (int i = 0; i < follows.length; i++) {
-                        follows[i] = data.readLong();
-                    }
-                    data.close();
-                }catch(Exception e){
-                    getListMember();
-                }
-                userStream = account.getTwitterStream();
-                userStream.addListener(ListStatusesActivity.this);
-                filterStream = account.getTwitterStream();
-                filterStream.addListener(ListStatusesActivity.this);
-                filter = new UserFilter(follows);
-                userStream.user();
-                filterStream.filter(new FilterQuery(follows));
-                try {
-                    Twitter twitter = account.getTwitter();
-                    List<Status> list = twitter.getUserListStatuses(listId, new Paging(1, 200));
-                    for (Status status : list) {
-                        adapter.add(status);
-                    }
-                    adapter.refresh();
-                } catch (Exception e) {
-                    CroutonUtil.error(ListStatusesActivity.this);
-                }
-                restRefresh();
-                d.dismiss();
-            }
-        }.start();
+       new Thread(()->{
+           try {
+               DataInputStream data = new DataInputStream(new FileInputStream(file));
+               follows = new long[data.readInt()];
+               for (int i = 0; i < follows.length; i++) {
+                   follows[i] = data.readLong();
+               }
+               data.close();
+           } catch (Exception e) {
+               getListMember();
+           }
+           userStream = account.getTwitterStream();
+           userStream.addListener(ListStatusesActivity.this);
+           filterStream = account.getTwitterStream();
+           filterStream.addListener(ListStatusesActivity.this);
+           filter = new UserFilter(follows);
+           userStream.user();
+           filterStream.filter(new FilterQuery(follows));
+           try {
+               Twitter twitter = account.getTwitter();
+               List<Status> list = twitter.getUserListStatuses(listId, new Paging(1, 200));
+               for (Status status : list) {
+                   adapter.add(status);
+               }
+               adapter.refresh();
+           } catch (Exception e) {
+               CroutonUtil.error(this);
+           }
+           restRefresh();
+           d.dismiss();
+       }).start();
     }
 
     @Override
@@ -130,15 +124,12 @@ public class ListStatusesActivity extends ActionBarActivity implements StatusLis
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
         if (id == R.id.list_action_get_member) {
-            final ProgressDialog d = DialogUtil.createProgress(this);
+            ProgressDialog d = DialogUtil.createProgress(this);
             d.show();
-            new Thread() {
-                @Override
-                public void run() {
-                    getListMember();
-                    d.dismiss();
-                }
-            }.start();
+            new Thread(()->{
+                getListMember();
+                d.dismiss();
+            }).start();
         }
         return true;
     }
@@ -199,26 +190,23 @@ public class ListStatusesActivity extends ActionBarActivity implements StatusLis
     //User
 
     public void restRefresh() {
-        rest = new Thread() {
-            @Override
-            public void run() {
-                try {
-                    Thread.sleep(30000);
-                    Twitter twitter = account.getTwitter();
-                    List<Status> list = twitter.getUserListStatuses(listId, new Paging(1, 200));
-                    for (Status status : list) {
-                        adapter.add(status);
-                    }
-                    adapter.requireRefresh = true;
-                } catch (Exception e) {
+        rest = new Thread(()->{
+            try {
+                Thread.sleep(30000);
+                Twitter twitter = account.getTwitter();
+                List<Status> list = twitter.getUserListStatuses(listId, new Paging(1, 200));
+                for (Status status : list) {
+                    adapter.add(status);
                 }
-                restRefresh();
+                adapter.requireRefresh = true;
+            } catch (Exception e) {
             }
-        };
+            restRefresh();
+        });
         rest.start();
     }
 
-    public void getListMember(){
+    public void getListMember() {
         try {
             List<User> members = new ArrayList<User>();
             Twitter t = account.getTwitter();
@@ -244,7 +232,7 @@ public class ListStatusesActivity extends ActionBarActivity implements StatusLis
             }
             data.close();
         } catch (Exception e) {
-            CroutonUtil.error(ListStatusesActivity.this);
+            CroutonUtil.error(this);
         }
     }
 }

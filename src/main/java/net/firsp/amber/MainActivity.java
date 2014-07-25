@@ -56,12 +56,9 @@ public class MainActivity extends ActionBarActivity {
         adapter = new AccountListAdapter(this);
         adapter.setAccounts(Accounts.getInstance().getAccounts());
         v.setAdapter(adapter);
-        v.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                account = (Account) adapterView.getItemAtPosition(i);
-                new AccountDialogFragment(MainActivity.this, account).show(getFragmentManager(), "account");
-            }
+        v.setOnItemClickListener((adapterView, view, i, l)->{
+            account = (Account) adapterView.getItemAtPosition(i);
+            new AccountDialogFragment(this, account).show(getFragmentManager(), "account");
         });
         setContentView(v);
     }
@@ -69,17 +66,13 @@ public class MainActivity extends ActionBarActivity {
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-
-        // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.main, menu);
         return true;
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
+        UIHandler handler = new UIHandler();
         int id = item.getItemId();
         if (id == R.id.action_authorize) {
             TextView text = new TextView(this);
@@ -97,75 +90,60 @@ public class MainActivity extends ActionBarActivity {
             new AlertDialog.Builder(this)
                     .setTitle("APIキー設定")
                     .setView(layout)
-                    .setPositiveButton("発射",new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialogInterface, int i) {
-                            final ProgressDialog d = DialogUtil.createProgress(MainActivity.this);
-                            d.show();
+                    .setPositiveButton("発射",(di,i)->{
+                        ProgressDialog d = DialogUtil.createProgress(this);
+                        d.show();
 
-                            new Thread() {
-                                public void run() {
-                                    try {
-                                        final Twitter t = new TwitterFactory().getInstance();
-                                        final StringBuilder consumerKey = new StringBuilder();
-                                        final StringBuilder consumerSecret = new StringBuilder();
-                                        if(!"".equals(consumer.getText().toString()) && !"".equals(secret.getText().toString())){
-                                            consumerKey.append(consumer.getText());
-                                            consumerSecret.append(secret.getText());
+                        new Thread(()->{
+                            try {
+                                Twitter t = new TwitterFactory().getInstance();
+                                StringBuilder consumerKey = new StringBuilder();
+                                StringBuilder consumerSecret = new StringBuilder();
+                                if(!"".equals(consumer.getText().toString()) && !"".equals(secret.getText().toString())){
+                                    consumerKey.append(consumer.getText());
+                                    consumerSecret.append(secret.getText());
 
-                                        }else{
-                                            consumerKey.append("lNO8K0sLqeVagRam1Vr52A");
-                                            consumerSecret.append("uW3vxLkLt6uKBGkN2kJDqGv5c8pItYZTi16G0Q3xnik");
-                                        }
-                                        t.setOAuthConsumer(consumerKey.toString(), consumerSecret.toString());
-                                        final RequestToken rt = t.getOAuthRequestToken();
-                                        d.dismiss();
-                                        new UIHandler(){
-                                            @Override
-                                            public void run(){
-                                                Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(rt.getAuthorizationURL()));
-                                                startActivity(intent);
-                                                final EditText editText = new EditText(MainActivity.this);
-                                                new AlertDialog.Builder(MainActivity.this)
-                                                        .setTitle("PINコードを入力して")
-                                                        .setView(editText)
-                                                        .setPositiveButton("発射", new DialogInterface.OnClickListener() {
-                                                            @Override
-                                                            public void onClick(DialogInterface dialogInterface, int i) {
-                                                                d.show();
-                                                                new Thread() {
-                                                                    @Override
-                                                                    public void run() {
-                                                                        try {
-                                                                            AccessToken token = t.getOAuthAccessToken(rt, editText.getText().toString());
-                                                                            Account a = new Account(consumerKey.toString(),
-                                                                                    consumerSecret.toString(),
-                                                                                    token.getToken(),
-                                                                                    token.getTokenSecret(),
-                                                                                    token.getUserId(),
-                                                                                    token.getScreenName());
-                                                                            Accounts.getInstance().putAccount(a);
-                                                                            Accounts.getInstance().setDefaultAccount(a);
-                                                                            adapter.setAccounts(Accounts.getInstance().getAccounts());
-                                                                        } catch (Exception e) {
-                                                                            DialogUtil.showException(MainActivity.this, e);
-                                                                        }
-                                                                        d.dismiss();
-                                                                    }
-                                                                }.start();
-                                                            }
-                                                        })
-                                                        .create()
-                                                        .show();
-                                            }
-                                        };
-
-                                    } catch (final Exception e) {
-                                        DialogUtil.showException(MainActivity.this, e);
-                                    }
+                                }else{
+                                    consumerKey.append("lNO8K0sLqeVagRam1Vr52A");
+                                    consumerSecret.append("uW3vxLkLt6uKBGkN2kJDqGv5c8pItYZTi16G0Q3xnik");
                                 }
-                            }.start();
-                        }
+                                t.setOAuthConsumer(consumerKey.toString(), consumerSecret.toString());
+                                RequestToken rt = t.getOAuthRequestToken();
+                                d.dismiss();
+                                handler.post(()->{
+                                    Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(rt.getAuthorizationURL()));
+                                    startActivity(intent);
+                                    final EditText editText = new EditText(this);
+                                    new AlertDialog.Builder(this)
+                                            .setTitle("PINコードを入力して")
+                                            .setView(editText)
+                                            .setPositiveButton("発射", (di_,i_)->{
+                                                d.show();
+                                                new Thread(()->{
+                                                    try {
+                                                        AccessToken token = t.getOAuthAccessToken(rt, editText.getText().toString());
+                                                        Account a = new Account(consumerKey.toString(),
+                                                                consumerSecret.toString(),
+                                                                token.getToken(),
+                                                                token.getTokenSecret(),
+                                                                token.getUserId(),
+                                                                token.getScreenName());
+                                                        Accounts.getInstance().putAccount(a);
+                                                        Accounts.getInstance().setDefaultAccount(a);
+                                                        adapter.setAccounts(Accounts.getInstance().getAccounts());
+                                                    } catch (Exception e) {
+                                                        DialogUtil.showException(this, e);
+                                                    }
+                                                    d.dismiss();
+                                                }).start();
+                                            })
+                                            .create()
+                                            .show();
+                                });
+                            } catch (Exception e) {
+                                DialogUtil.showException(this, e);
+                            }
+                        }).start();
                     })
                     .create()
                     .show();
@@ -201,31 +179,28 @@ public class MainActivity extends ActionBarActivity {
             android.os.Process.killProcess(android.os.Process.myPid());
         }
         if(id == R.id.action_cache){
-            final ProgressDialog d = DialogUtil.createProgress(this);
+            ProgressDialog d = DialogUtil.createProgress(this);
             d.show();
-            new Thread(){
-                @Override
-                public void run(){
-                    try{
-                        long[] ids = Accounts.getInstance().getDefaultAccount().getTwitter().getFriendsIDs(-1).getIDs();
-                        HashSet<String> set = new HashSet<String>();
-                        for (int i = 0; i < ids.length; i++) {
-                            set.add(String.valueOf(ids[i]));
-                        }
-                        File cache = new File(getCacheDir().getAbsoluteFile(), "cache");
-                        long deletebyte = 0;
-                        for (File dir : cache.listFiles()) {
-                            if(!set.contains(dir.getName())){
-                                deletebyte += delete(dir);
-                            }
-                        }
-                        CroutonUtil.showText(MainActivity.this, "" + deletebyte + "バイトのファイルが削除されました");
-                    }catch(Exception e){
-                        CroutonUtil.error(MainActivity.this);
+            new Thread(()->{
+                try{
+                    long[] ids = Accounts.getInstance().getDefaultAccount().getTwitter().getFriendsIDs(-1).getIDs();
+                    HashSet<String> set = new HashSet<String>();
+                    for (int i = 0; i < ids.length; i++) {
+                        set.add(String.valueOf(ids[i]));
                     }
-                    d.dismiss();
+                    File cache = new File(getCacheDir().getAbsoluteFile(), "cache");
+                    long deletebyte = 0;
+                    for (File dir : cache.listFiles()) {
+                        if(!set.contains(dir.getName())){
+                            deletebyte += delete(dir);
+                        }
+                    }
+                    CroutonUtil.showText(this, "" + deletebyte + "バイトのファイルが削除されました");
+                }catch(Exception e){
+                    CroutonUtil.error(this);
                 }
-            }.start();
+                d.dismiss();
+            }).start();
         }
         return super.onOptionsItemSelected(item);
     }
@@ -268,7 +243,7 @@ public class MainActivity extends ActionBarActivity {
             t.addListener(AsyncTwitterUtil.getTwitterListener(this));
             t.updateProfileImage(getContentResolver().openInputStream(data.getData()));
         } catch (Exception e) {
-            ToastUtil.error(MainActivity.this);
+            ToastUtil.error(this);
         }
     }
 

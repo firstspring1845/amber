@@ -28,32 +28,25 @@ public class DigUpActivity extends Activity {
         d.show();
 
         try{
-            final long id = Long.parseLong(intent.getData().toString().replaceAll(".*/",""));
+            long id = Long.parseLong(intent.getData().toString().replaceAll(".*/",""));
             Accounts.initialize(this);
-            new Thread(){
-                @Override
-                public void run(){
+            new Thread(()->{
+                try{
+                    Twitter t = Accounts.getInstance().getDefaultAccount().getTwitter();
+                    Status s = t.showStatus(id);
+                    //とりあえず削除を試みる
                     try{
-                        Twitter t = Accounts.getInstance().getDefaultAccount().getTwitter();
-                        Status s = t.showStatus(id);
-                        //とりあえず削除を試みる
-                        try{
-                            t.destroyStatus(s.getCurrentUserRetweetId());
-                        }catch(Exception e){
-                        }
-                        t.retweetStatus(id);
+                        t.destroyStatus(s.getCurrentUserRetweetId());
                     }catch(Exception e){
                     }
-                    new UIHandler(){
-                        @Override
-                        public void run(){
-                            d.dismiss();
-                            finish();
-                        }
-                    };
-
+                    t.retweetStatus(id);
+                }catch(Exception e){
                 }
-            }.start();
+                new UIHandler().post(()->{
+                    d.dismiss();
+                    finish();
+                });
+            }).start();
         }catch(Exception e){
             finish();
         }

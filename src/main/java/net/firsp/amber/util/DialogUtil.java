@@ -17,7 +17,7 @@ import twitter4j.StatusUpdate;
 
 public class DialogUtil {
 
-    public static void showException(final Activity activity, Exception exception) {
+    public static void showException(Activity activity, Exception exception) {
         final StringBuilder sb = new StringBuilder();
         sb.append(exception.toString());
         sb.append("\n");
@@ -25,13 +25,9 @@ public class DialogUtil {
             sb.append(el.toString());
             sb.append("\n");
         }
-        new UIHandler(){
-            @Override
-            public void run(){
-                new AlertDialog.Builder(activity).setMessage(sb.toString()).create().show();
-            }
-        };
-
+        new UIHandler().post(() -> {
+            new AlertDialog.Builder(activity).setMessage(sb.toString()).create().show();
+        });
     }
 
     public static ProgressDialog createProgress(Context context) {
@@ -43,25 +39,22 @@ public class DialogUtil {
     }
 
     //statusがnullならツイート、存在するならリプライ
-    public static void showTweetDialog(final Activity activity, final Status status){
-        final EditText editText = new EditText(activity);
-        if(status != null){
+    public static void showTweetDialog(Activity activity, Status status) {
+        EditText editText = new EditText(activity);
+        if (status != null) {
             editText.setText("@" + status.getUser().getScreenName() + " ");
         }
         new AlertDialog.Builder(activity)
                 .setTitle(status == null ? "Tweet" : "Reply")
                 .setView(editText)
-                .setPositiveButton("発射", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialogInterface, int i) {
-                        AsyncTwitter t = Accounts.getInstance().getDefaultAccount().getAsyncTwitter();
-                        t.addListener(AsyncTwitterUtil.getTwitterListener(activity));
-                        StatusUpdate s = new StatusUpdate(editText.getText().toString());
-                        if(status != null){
-                            s.setInReplyToStatusId(status.getId());
-                        }
-                        t.updateStatus(s);
+                .setPositiveButton("発射", (di, i) -> {
+                    AsyncTwitter t = Accounts.getInstance().getDefaultAccount().getAsyncTwitter();
+                    t.addListener(AsyncTwitterUtil.getTwitterListener(activity));
+                    StatusUpdate s = new StatusUpdate(editText.getText().toString());
+                    if (status != null) {
+                        s.setInReplyToStatusId(status.getId());
                     }
+                    t.updateStatus(s);
                 })
                 .create()
                 .show();
@@ -69,10 +62,4 @@ public class DialogUtil {
         editText.setSelection(editText.getText().length());
     }
 
-    public static final DialogInterface.OnClickListener ALERT_DO_NOTHING = new DialogInterface.OnClickListener() {
-        @Override
-        public void onClick(DialogInterface dialogInterface, int i) {
-
-        }
-    };
 }

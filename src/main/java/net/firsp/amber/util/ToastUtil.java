@@ -7,14 +7,10 @@ import android.widget.Toast;
 
 public class ToastUtil {
 
-    public static void show(final Context context, final String text) {
-        new UIHandler(){
-            @Override
-            public void run(){
-                Toast.makeText(context, text, Toast.LENGTH_SHORT).show();
-            }
-        };
-
+    public static void show(Context context, String text) {
+        new UIHandler().post(()->{
+            Toast.makeText(context, text, Toast.LENGTH_SHORT).show();
+        });
     }
 
     public static void error(Context context) {

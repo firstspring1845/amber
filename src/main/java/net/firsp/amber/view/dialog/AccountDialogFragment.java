@@ -68,17 +68,14 @@ public class AccountDialogFragment extends DialogFragment implements AdapterView
     }
 
     void updateName() {
-        final EditText name = new EditText(activity);
+        EditText name = new EditText(activity);
         new AlertDialog.Builder(activity)
                 .setTitle("名前を入れてね")
                 .setView(name)
-                .setPositiveButton("OK", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialogInterface, int i) {
-                        AsyncTwitter t = account.getAsyncTwitter();
-                        t.addListener(AsyncTwitterUtil.getTwitterListener(activity));
-                        t.updateProfile(name.getText().toString(), null, null, null);
-                    }
+                .setPositiveButton("OK", (di, i) -> {
+                    AsyncTwitter t = account.getAsyncTwitter();
+                    t.addListener(AsyncTwitterUtil.getTwitterListener(activity));
+                    t.updateProfile(name.getText().toString(), null, null, null);
                 })
                 .create()
                 .show();

@@ -41,12 +41,9 @@ public abstract class StreamTimelineActivity extends ActionBarActivity implement
         setContentView(view);
         adapter = new StatusListAdapter(this);
         view.setAdapter(adapter);
-        view.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                Status status = (Status) adapter.getItem(i);
-                new StatusDialogFragment(StreamTimelineActivity.this, status).show(getFragmentManager(), "Status");
-            }
+        view.setOnItemClickListener((adapterView, view, i, l) -> {
+            Status status = (Status) adapter.getItem(i);
+            new StatusDialogFragment(this, status).show(getFragmentManager(), "Status");
         });
         view.setOnScrollListener(adapter);
         account = Accounts.getInstance().getAccount(getIntent().getLongExtra("id",0));
@@ -73,12 +70,9 @@ public abstract class StreamTimelineActivity extends ActionBarActivity implement
             return;
         }
         if (!adapter.isCurrent()) {
-            new UIHandler() {
-                @Override
-                public void run() {
-                    addStatus(status);
-                }
-            };
+            new UIHandler().post(()->{
+                addStatus(status);
+            });
             return;
         }
         adapter.addSorted(status);

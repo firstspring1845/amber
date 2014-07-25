@@ -47,17 +47,17 @@ public class StatusListAdapter extends BaseAdapter implements AbsListView.OnScro
     //返り値は挿入位置 挿入しない場合-1
     //bisectは神
     //UIスレッドから呼び出し
-    public int addSorted(Status status){
-        if(!statuses.containsKey(status.getId())){
-            synchronized(this){
+    public int addSorted(Status status) {
+        if (!statuses.containsKey(status.getId())) {
+            synchronized (this) {
                 int lo = 0;
                 int hi = statusList.size();
-                while(lo < hi){
+                while (lo < hi) {
                     int mid = (lo + hi) >> 2;
                     //降順なので逆
-                    if(statusList.get(mid).getId() > status.getId()){
+                    if (statusList.get(mid).getId() > status.getId()) {
                         lo = mid + 1;
-                    }else{
+                    } else {
                         hi = mid;
                     }
                 }
@@ -81,31 +81,21 @@ public class StatusListAdapter extends BaseAdapter implements AbsListView.OnScro
 
     public void refresh() {
         List<Status> list = new ArrayList<Status>(statuses.values());
-        Collections.sort(list, new Comparator<Status>() {
-            @Override
-            public int compare(Status status, Status status2) {
-                return Long.valueOf(status.getId()).compareTo(status2.getId());
-            }
-        });
+        Collections.sort(list, (lhs, rhs) -> Long.valueOf(lhs.getId()).compareTo(rhs.getId()));
+        Collections.sort(list);
         Collections.reverse(list);
         statusList = Collections.synchronizedList(list);
         if (isCurrent()) {
             notifyDataSetChanged();
         } else {
-            new UIHandler(){
-                @Override
-                public void run(){
-                    notifyDataSetChanged();
-                }
-            };
-
+            new UIHandler().post(() -> notifyDataSetChanged());
         }
     }
 
-    public void clear(boolean hold){
+    public void clear(boolean hold) {
         statuses.clear();
-        if(hold){
-            for (Status status : statusList.subList(0,3)) {
+        if (hold) {
+            for (Status status : statusList.subList(0, 3)) {
                 statuses.put(status.getId(), status);
             }
         }
@@ -149,16 +139,10 @@ public class StatusListAdapter extends BaseAdapter implements AbsListView.OnScro
         //setAdjustViewBoundsすると画像が拡大されなくなるんですよ
         //img.setAdjustViewBounds(true);
         //img.setImageResource(R.drawable.unh7);
-        img.setImageBitmap(cache.getIcon(id, url, new Callback() {
-            @Override
-            public void callback(final Object callback) {
-                new UIHandler(){
-                    @Override
-                    public void run() {
-                        img.setImageBitmap((Bitmap)callback);
-                    }
-                };
-            }
+        img.setImageBitmap(cache.getIcon(id, url, (callback) -> {
+            new UIHandler().post(() -> {
+                img.setImageBitmap((Bitmap) callback);
+            });
         }));
 
         TextView v = null;
@@ -183,7 +167,7 @@ public class StatusListAdapter extends BaseAdapter implements AbsListView.OnScro
         }
 
         sb.append(" via ");
-        sb.append(original.getSource().replaceAll("<.*?>",""));
+        sb.append(original.getSource().replaceAll("<.*?>", ""));
 
         v.setText(sb.toString());
 
@@ -197,26 +181,26 @@ public class StatusListAdapter extends BaseAdapter implements AbsListView.OnScro
 
     @Override
     public void onScrollStateChanged(AbsListView absListView, int state) {
-        if(true){
+        if (true) {
             //流星っぽいの
             //スクロール中は何もしない
-            if(state != AbsListView.OnScrollListener.SCROLL_STATE_IDLE){
+            if (state != AbsListView.OnScrollListener.SCROLL_STATE_IDLE) {
                 return;
             }
-            try{
+            try {
                 int pos = absListView.getFirstVisiblePosition();
                 int off = absListView.getChildAt(0).getTop();
                 long id = statusList.get(pos).getId();
                 refresh();
                 for (int j = 0; j < statusList.size(); j++) {
                     Status status = statusList.get(j);
-                    if(status.getId() == id){
+                    if (status.getId() == id) {
                         pos = j;
                         break;
                     }
                 }
-                ((ListView)absListView).setSelectionFromTop(pos, off);
-            }catch(Exception e){
+                ((ListView) absListView).setSelectionFromTop(pos, off);
+            } catch (Exception e) {
                 //怠慢プログラミング最高ｗ
             }
             return;
@@ -233,7 +217,6 @@ public class StatusListAdapter extends BaseAdapter implements AbsListView.OnScro
             absListView.setSelection(adds);
             if (adds != 0) {
                 CroutonUtil.showText(activity, "" + adds + "件追加しました");
-                //ToastUtil.show(this, "" + adds + "件追加しました");
             }
         }
     }

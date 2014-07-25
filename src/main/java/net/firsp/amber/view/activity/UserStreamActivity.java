@@ -9,17 +9,14 @@ public class UserStreamActivity extends StreamTimelineActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         userStream.user();
-        new Thread(){
-            @Override
-            public void run(){
-                try{
-                    for (Status status : account.getTwitter().getHomeTimeline()) {
-                        adapter.add(status);
-                        adapter.refresh();
-                    }
-                }catch(Exception e){
+        new Thread(()->{
+            try{
+                for (Status status : account.getTwitter().getHomeTimeline()) {
+                    adapter.add(status);
+                    adapter.refresh();
                 }
+            }catch(Exception e){
             }
-        }.start();
+        }).start();
     }
 }

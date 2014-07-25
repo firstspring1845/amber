@@ -58,23 +58,20 @@ public class TwitterListDialogFragment extends DialogFragment implements Adapter
     public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
         dismiss();
         if (i == lists.length) {
-            final ProgressDialog d = DialogUtil.createProgress(activity);
+            ProgressDialog d = DialogUtil.createProgress(activity);
             d.show();
-            new Thread() {
-                @Override
-                public void run() {
-                    try {
-                        UserList[] arr = account.getTwitter().getUserLists(account.getId()).toArray(new UserList[0]);
-                        File accountDir = account.getAccountDir(activity);
-                        accountDir.mkdirs();
-                        Serializer.write(new File(accountDir, "lists.dat"),
-                                account.getTwitter().getUserLists(account.getId()).toArray(new UserList[0]));
-                    } catch (Exception e) {
-                        ToastUtil.error(activity);
-                    }
-                    d.dismiss();
+            new Thread(()->{
+                try {
+                    UserList[] arr = account.getTwitter().getUserLists(account.getId()).toArray(new UserList[0]);
+                    File accountDir = account.getAccountDir(activity);
+                    accountDir.mkdirs();
+                    Serializer.write(new File(accountDir, "lists.dat"),
+                            account.getTwitter().getUserLists(account.getId()).toArray(new UserList[0]));
+                } catch (Exception e) {
+                    ToastUtil.error(activity);
                 }
-            }.start();
+                d.dismiss();
+            }).start();
         } else {
             Intent intent = new Intent(activity, ListStatusesActivity.class);
             intent.putExtra("id", lists[i].getId());

@@ -13,21 +13,13 @@ public class CroutonUtil {
     public static final int INFO = 0;
     public static final int ALERT = 1;
 
-    public static void showText(final Activity activity, final CharSequence charSequence, final int style) {
-        new UIHandler(){
-            @Override
-            public void run(){
-                try {
-                    Crouton.showText(activity, charSequence, getStyle(style));
-                } catch (Exception e) {
-                    DialogUtil.showException(activity, e);
-                }
-            }
-        };
-
+    public static void showText(Activity activity, CharSequence charSequence, int style) {
+        new UIHandler().post(()->{
+            Crouton.showText(activity, charSequence, getStyle(style));
+        });
     }
 
-    public static Style getStyle(final int type)
+    public static Style getStyle(int type)
     {
         Configuration.Builder conf = new Configuration.Builder();
         conf.setDuration(1000);

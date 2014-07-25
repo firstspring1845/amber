@@ -36,12 +36,9 @@ public class UserTimelineActivity extends Activity {
         adapter = new StatusListAdapter(this);
         v.setAdapter(adapter);
         v.setOnScrollListener(adapter);
-        v.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                Status status = (Status) adapter.getItem(i);
-                new StatusDialogFragment(UserTimelineActivity.this, status).show(getFragmentManager(), "Status");
-            }
+        v.setOnItemClickListener((adapterView, view, i, l) -> {
+            Status status = (Status) adapter.getItem(i);
+            new StatusDialogFragment(this, status).show(getFragmentManager(), "Status");
         });
         setContentView(v);
 
@@ -53,7 +50,7 @@ public class UserTimelineActivity extends Activity {
             Matcher m = Pattern.compile("twitter.com/[^/]*").matcher(uri.toString());
             if (m.find()) {
                 screenName = m.group(0).split("/")[1];
-            }else{
+            } else {
                 CroutonUtil.error(this);
                 return;
             }
@@ -63,20 +60,17 @@ public class UserTimelineActivity extends Activity {
         setTitle(screenName);
         account = Accounts.getInstance().getDefaultAccount();
 
-        new Thread() {
-            @Override
-            public void run() {
-                try {
-                    Twitter twitter = account.getTwitter();
-                    List<Status> list = twitter.getUserTimeline(screenName, new Paging(1, 200));
-                    for (Status status : list) {
-                        adapter.add(status);
-                    }
-                    adapter.refresh();
-                } catch (Exception e) {
-                    CroutonUtil.error(UserTimelineActivity.this);
+        new Thread(() -> {
+            try {
+                Twitter twitter = account.getTwitter();
+                List<Status> list = twitter.getUserTimeline(screenName, new Paging(1, 200));
+                for (Status status : list) {
+                    adapter.add(status);
                 }
+                adapter.refresh();
+            } catch (Exception e) {
+                CroutonUtil.error(this);
             }
-        }.start();
+        }).start();
     }
 }

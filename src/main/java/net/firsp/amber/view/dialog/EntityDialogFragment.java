@@ -35,27 +35,24 @@ public class EntityDialogFragment extends DialogFragment {
         Dialog d = new Dialog(activity);
         d.setTitle("情報");
 
-        ArrayList<EntityModel> l = new ArrayList<EntityModel>();
+        ArrayList<EntityModel> list = new ArrayList<EntityModel>();
         for (UserMentionEntity userMentionEntity : status.getUserMentionEntities()) {
-            l.add(new EntityModel(userMentionEntity));
+            list.add(new EntityModel(userMentionEntity));
         }
         for (URLEntity urlEntity : status.getURLEntities()) {
-            l.add(new EntityModel(urlEntity));
+            list.add(new EntityModel(urlEntity));
         }
         for (MediaEntity mediaEntity : status.getMediaEntities()) {
-            l.add(new EntityModel(mediaEntity));
+            list.add(new EntityModel(mediaEntity));
         }
 
         ListView v = new ListView(activity);
-        v.setAdapter(new ArrayAdapter(activity, android.R.layout.simple_list_item_1, l.toArray()));
-        v.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                dismiss();
-                EntityModel m = (EntityModel) adapterView.getItemAtPosition(i);
-                Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(m.getContentUrl()));
-                activity.startActivity(intent);
-            }
+        v.setAdapter(new ArrayAdapter(activity, android.R.layout.simple_list_item_1, list.toArray()));
+        v.setOnItemClickListener((adapterView, view, i, l) -> {
+            dismiss();
+            EntityModel m = (EntityModel) adapterView.getItemAtPosition(i);
+            Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(m.getContentUrl()));
+            activity.startActivity(intent);
         });
 
         d.setContentView(v);

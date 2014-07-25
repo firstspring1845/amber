@@ -23,13 +23,9 @@ public class AccountListAdapter extends BaseAdapter {
 
     public void setAccounts(Account[] accounts) {
         data = accounts;
-        new UIHandler(){
-            @Override
-            public void run(){
-                notifyDataSetChanged();
-            }
-        };
-
+        new UIHandler().post(() -> {
+            notifyDataSetChanged();
+        });
     }
 
     @Override
