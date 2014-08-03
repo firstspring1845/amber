@@ -112,7 +112,7 @@ public class StatusDialogFragment extends DialogFragment implements AdapterView.
                 activity.startActivity(intent);
                 break;
             case 7:
-                new EntityDialogFragment(activity, original).show(activity.getFragmentManager(), "Entity");
+                new EntityDialogFragment(activity, status).show(activity.getFragmentManager(), "Entity");
                 break;
         }
     }
