@@ -170,9 +170,8 @@ public class MainActivity extends ActionBarActivity {
             }
             adapter.setAccounts(Accounts.getInstance().getAccounts());
         }
-        if (id == R.id.action_shutdown) {
+        if (id == R.id.action_notify_setting) {
             startActivity(new Intent(this, NotifySettingActivity.class));
-            //android.os.Process.killProcess(android.os.Process.myPid());
         }
         if (id == R.id.action_cache) {
             ProgressDialog d = DialogUtil.createProgress(this);

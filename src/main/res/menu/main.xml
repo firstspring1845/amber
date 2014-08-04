@@ -15,8 +15,8 @@
         android:title="@string/action_restore"
         android:orderInCategory="100"
         app:showAsAction="never" />
-    <item android:id="@+id/action_shutdown"
-    android:title="@string/action_shutdown"
+    <item android:id="@+id/action_notify_setting"
+    android:title="@string/action_notify_setting"
     android:orderInCategory="100"
     app:showAsAction="never" />
     <item android:id="@+id/action_cache"

@@ -7,7 +7,7 @@
     <string name="action_authorize">認証</string>
     <string name="action_backup">アカウント情報のバックアップ</string>
     <string name="action_restore">アカウント情報の復元</string>
-    <string name="action_shutdown">強制終了</string>
+    <string name="action_notify_setting">通知設定</string>
     <string name="action_cache">キャッシュ掃除（フォロイー除外）</string>
     <string name="list_action_get_member">メンバー取得</string>
     <string name="intent_open_user_timeline">ユーザーTLを開く</string>
