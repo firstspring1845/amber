@@ -23,6 +23,7 @@ import net.firsp.amber.util.DialogUtil;
 import net.firsp.amber.util.Serializer;
 import net.firsp.amber.util.ToastUtil;
 import net.firsp.amber.util.UIHandler;
+import net.firsp.amber.view.activity.NotifySettingActivity;
 import net.firsp.amber.view.adapter.AccountListAdapter;
 import net.firsp.amber.view.dialog.AccountDialogFragment;
 
@@ -107,7 +108,7 @@ public class MainActivity extends ActionBarActivity {
                                 handler.post(() -> {
                                     Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(rt.getAuthorizationURL()));
                                     startActivity(intent);
-                                    final EditText editText = new EditText(this);
+                                    EditText editText = new EditText(this);
                                     new AlertDialog.Builder(this)
                                             .setTitle("PINコードを入力して")
                                             .setView(editText)
@@ -170,7 +171,8 @@ public class MainActivity extends ActionBarActivity {
             adapter.setAccounts(Accounts.getInstance().getAccounts());
         }
         if (id == R.id.action_shutdown) {
-            android.os.Process.killProcess(android.os.Process.myPid());
+            startActivity(new Intent(this, NotifySettingActivity.class));
+            //android.os.Process.killProcess(android.os.Process.myPid());
         }
         if (id == R.id.action_cache) {
             ProgressDialog d = DialogUtil.createProgress(this);

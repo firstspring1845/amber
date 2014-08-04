@@ -35,7 +35,7 @@ public class EntityDialogFragment extends DialogFragment {
         Dialog d = new Dialog(activity);
         d.setTitle("情報");
 
-        ArrayList<Object> list = new ArrayList<Object>();
+        ArrayList<Object> list = new ArrayList<>();
         list.add(status.getUser());
         Collections.addAll(list, status.getUserMentionEntities());
         Collections.addAll(list, status.getURLEntities());

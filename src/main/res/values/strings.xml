@@ -13,5 +13,7 @@
     <string name="intent_open_user_timeline">ユーザーTLを開く</string>
     <string name="intent_dig_up">掘り返し</string>
     <string name="stream_action_clear">TLのクリア</string>
+    <string name="notify_add">条件追加</string>
+    <string name="notify_remove">条件全削除</string>
 
 </resources>

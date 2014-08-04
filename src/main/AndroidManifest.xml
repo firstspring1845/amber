@@ -43,6 +43,10 @@
             android:label="UserStream">
         </activity>
         <activity
+            android:name="net.firsp.amber.view.activity.NotifySettingActivity"
+            android:label="NotifySetting">
+        </activity>
+        <activity
             android:name="net.firsp.amber.view.activity.DigUpActivity"
             android:label="DigUp">
             <intent-filter

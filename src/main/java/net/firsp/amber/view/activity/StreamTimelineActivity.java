@@ -9,6 +9,7 @@ import android.widget.ListView;
 import net.firsp.amber.R;
 import net.firsp.amber.account.Account;
 import net.firsp.amber.account.Accounts;
+import net.firsp.amber.common.Notificator;
 import net.firsp.amber.util.DialogUtil;
 import net.firsp.amber.util.UIHandler;
 import net.firsp.amber.view.adapter.StatusListAdapter;
@@ -46,6 +47,7 @@ public abstract class StreamTimelineActivity extends ActionBarActivity implement
         account = Accounts.getInstance().getAccount(getIntent().getLongExtra("id", 0));
         userStream = account.getTwitterStream();
         userStream.addListener(this);
+        userStream.addListener(Notificator.initialize(this));
         filterStream = account.getTwitterStream();
         filterStream.addListener(this);
     }
@@ -53,6 +55,7 @@ public abstract class StreamTimelineActivity extends ActionBarActivity implement
     @Override
     public void onDestroy() {
         super.onDestroy();
+        Notificator.dispose();
         Crouton.cancelAllCroutons();
         userStream.shutdown();
         filterStream.shutdown();
