@@ -62,20 +62,13 @@ public abstract class StreamTimelineActivity extends ActionBarActivity implement
     }
 
     public void addStatus(final Status status) {
-        //バックグラウンドでツイ挿入してるとたまに止まるからバックグラウンドでは無条件でTLに挿入しない
-        //後の条件はViewがトップじゃなければ
-        if (!isRunning() || view.getFirstVisiblePosition() != 0 || view.getChildAt(0) == null || view.getChildAt(0).getTop() != 0) {
+        //表示位置がトップじゃなければTLに挿入しない
+        if (view.getFirstVisiblePosition() != 0 || view.getChildAt(0) == null || view.getChildAt(0).getTop() != 0) {
             adapter.add(status);
             adapter.requireRefresh = true;
             return;
         }
-        if (!adapter.isCurrent()) {
-            new UIHandler().post(() -> {
-                addStatus(status);
-            });
-            return;
-        }
-        adapter.addSorted(status);
+        new UIHandler().post(()->adapter.addSorted(status));
     }
 
     @Override
