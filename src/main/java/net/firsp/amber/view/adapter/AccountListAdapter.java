@@ -7,6 +7,7 @@ import android.widget.BaseAdapter;
 import android.widget.TextView;
 
 import net.firsp.amber.account.Account;
+import net.firsp.amber.account.Accounts;
 import net.firsp.amber.util.UIHandler;
 
 public class AccountListAdapter extends BaseAdapter {
@@ -49,7 +50,13 @@ public class AccountListAdapter extends BaseAdapter {
         } catch (Exception e) {
             v = new TextView(activity);
         }
-        v.setText(((Account) getItem(i)).getScreenName());
+        Account a = ((Account) getItem(i));
+        StringBuilder sb = new StringBuilder();
+        if(a == Accounts.getInstance().getDefaultAccount()){
+            sb.append("★");
+        }
+        sb.append(a.getScreenName());
+        v.setText(sb.toString());
         return v;
     }
 }
