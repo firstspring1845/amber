@@ -9,8 +9,9 @@ import android.widget.EditText;
 import android.widget.ListView;
 
 import net.firsp.amber.R;
-import net.firsp.amber.account.Accounts;
+import net.firsp.amber.util.Command;
 import net.firsp.amber.view.adapter.NotifySettingAdapter;
+import net.firsp.amber.view.dialog.CommandDialogFragment;
 
 public class NotifySettingActivity extends ActionBarActivity {
 
@@ -24,6 +25,9 @@ public class NotifySettingActivity extends ActionBarActivity {
         adapter.load();
         v.setAdapter(adapter);
         v.setOnItemClickListener((adapterView, view, i, l) -> {
+            CommandDialogFragment d = new CommandDialogFragment(this, adapter.getText(adapterView.getItemAtPosition(i).toString()));
+            d.addCommand(new Command("削除", ()->adapter.remove(i)));
+            d.show(getFragmentManager(), "Command");
         });
         setContentView(v);
     }
@@ -44,14 +48,12 @@ public class NotifySettingActivity extends ActionBarActivity {
                         .setView(editText)
                         .setPositiveButton("発射", (di, i) -> {
                             adapter.add("u" + editText.getText());
-                            adapter.save();
                         })
                         .create()
                         .show();
                 break;
             case R.id.notify_remove:
                 adapter.clear();
-                adapter.save();
         }
         return true;
     }

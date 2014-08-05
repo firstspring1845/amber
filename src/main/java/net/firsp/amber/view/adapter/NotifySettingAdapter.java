@@ -26,11 +26,19 @@ public class NotifySettingAdapter extends BaseAdapter {
 
     public void clear(){
         data.clear();
+        save();
         notifyDataSetChanged();
     }
 
     public void add(String dat){
         data.add(dat);
+        save();
+        notifyDataSetChanged();
+    }
+
+    public void remove(int i){
+        data.remove(i);
+        save();
         notifyDataSetChanged();
     }
 
@@ -86,15 +94,7 @@ public class NotifySettingAdapter extends BaseAdapter {
         return i;
     }
 
-    @Override
-    public View getView(int i, View view, ViewGroup viewGroup) {
-        TextView v = null;
-        try {
-            v = (TextView) activity.getLayoutInflater().inflate(android.R.layout.simple_list_item_1, null);
-        } catch (Exception e) {
-            v = new TextView(activity);
-        }
-        String data = getItem(i).toString();
+    public static String getText(String data){
         StringBuilder sb = new StringBuilder();
         switch (data.charAt(0)) {
             case 'u':
@@ -105,7 +105,19 @@ public class NotifySettingAdapter extends BaseAdapter {
                 break;
         }
         sb.append(data.substring(1));
-        v.setText(sb.toString());
+        return sb.toString();
+    }
+
+    @Override
+    public View getView(int i, View view, ViewGroup viewGroup) {
+        TextView v = null;
+        try {
+            v = (TextView) activity.getLayoutInflater().inflate(android.R.layout.simple_list_item_1, null);
+        } catch (Exception e) {
+            v = new TextView(activity);
+        }
+        String data = getItem(i).toString();
+        v.setText(getText(data));
         return v;
     }
 }
