@@ -16,6 +16,7 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import de.keyboardsurfer.android.widget.crouton.Crouton;
 import twitter4j.Paging;
 import twitter4j.Status;
 import twitter4j.Twitter;
@@ -71,4 +72,11 @@ public class UserTimelineActivity extends Activity {
             }
         }).start();
     }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        Crouton.cancelAllCroutons();
+    }
+
 }

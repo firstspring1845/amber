@@ -216,6 +216,12 @@ public class MainActivity extends ActionBarActivity {
     }
 
     @Override
+    public void onPause() {
+        super.onPause();
+        Crouton.cancelAllCroutons();
+    }
+
+    @Override
     public void onDestroy() {
         Crouton.cancelAllCroutons();
     }

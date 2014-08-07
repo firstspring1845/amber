@@ -109,6 +109,12 @@ public class ListStatusesActivity extends ActionBarActivity implements StatusLis
     }
 
     @Override
+    public void onPause() {
+        super.onPause();
+        Crouton.cancelAllCroutons();
+    }
+
+    @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.list, menu);
         return true;

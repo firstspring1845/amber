@@ -95,6 +95,7 @@ public abstract class StreamTimelineActivity extends ActionBarActivity implement
     public void onPause() {
         super.onPause();
         running = false;
+        Crouton.cancelAllCroutons();
     }
 
     @Override
