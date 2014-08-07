@@ -215,6 +215,14 @@ public class MainActivity extends ActionBarActivity {
         return deletebyte;
     }
 
+    @Override
+    public boolean onKeyLongPress(int keyCode, KeyEvent event) {
+        if (event.getKeyCode() == KeyEvent.KEYCODE_BACK) {
+            android.os.Process.killProcess(android.os.Process.myPid());
+        }
+        return super.onKeyLongPress(keyCode, event);
+    }
+
     // Call from AccountDialogFragment#updateIcon
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
