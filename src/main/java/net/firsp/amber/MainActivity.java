@@ -215,26 +215,6 @@ public class MainActivity extends ActionBarActivity {
         return deletebyte;
     }
 
-    @Override
-    public void onPause() {
-        super.onPause();
-        Crouton.cancelAllCroutons();
-    }
-
-    @Override
-    public void onDestroy() {
-        Crouton.cancelAllCroutons();
-    }
-
-    @Override
-    public boolean onKeyDown(int keyCode, KeyEvent event) {
-        if (keyCode == KeyEvent.KEYCODE_BACK) {
-            android.os.Process.killProcess(android.os.Process.myPid());
-        }
-        return false;
-    }
-
-
     // Call from AccountDialogFragment#updateIcon
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
