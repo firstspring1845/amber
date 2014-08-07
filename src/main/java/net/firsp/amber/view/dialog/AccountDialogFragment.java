@@ -12,6 +12,7 @@ import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ListView;
 
+import net.firsp.amber.MainActivity;
 import net.firsp.amber.account.Account;
 import net.firsp.amber.account.Accounts;
 import net.firsp.amber.util.AsyncTwitterUtil;
@@ -62,6 +63,7 @@ public class AccountDialogFragment extends DialogFragment implements AdapterView
                 break;
             case 4:
                 Accounts.getInstance().setDefaultAccount(account);
+                ((MainActivity)activity).refresh();
                 break;
         }
     }

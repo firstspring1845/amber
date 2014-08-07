@@ -58,6 +58,9 @@ public class MainActivity extends ActionBarActivity {
         setContentView(v);
     }
 
+    public void refresh(){
+        adapter.notifyDataSetInvalidated();
+    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
