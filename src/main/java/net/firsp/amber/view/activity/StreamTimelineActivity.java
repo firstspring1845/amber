@@ -68,7 +68,8 @@ public abstract class StreamTimelineActivity extends ActionBarActivity implement
             adapter.requireRefresh = true;
             return;
         }
-        new UIHandler().post(()->adapter.addSorted(status));
+        adapter.addSorted(status);
+        new UIHandler().post(()->adapter.notifyDataSetChanged());
     }
 
     @Override
