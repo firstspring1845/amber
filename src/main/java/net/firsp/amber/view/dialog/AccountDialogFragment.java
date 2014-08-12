@@ -37,7 +37,7 @@ public class AccountDialogFragment extends DialogFragment implements AdapterView
         Dialog d = new Dialog(activity);
         d.setTitle(account.getScreenName());
         ListView v = new ListView(activity);
-        v.setAdapter(new ArrayAdapter(activity, android.R.layout.simple_list_item_1, Arrays.asList("名前変更", "アイコン変更", "リスト管理", "ストリーミング", "デフォルトに設定").toArray()));
+        v.setAdapter(new ArrayAdapter(activity, android.R.layout.simple_list_item_1, Arrays.asList("名前変更", "アイコン変更", "リスト", "ストリーミング", "デフォルトに設定").toArray()));
         v.setOnItemClickListener(this);
         d.setContentView(v);
         return d;

@@ -55,7 +55,7 @@ public class StatusListAdapter extends BaseAdapter implements AbsListView.OnScro
         }
     }
 
-    //OnScrollLIstenerによるツイート追加をする場合はrequireRefreshをtrueにすること
+    //OnScrollListenerによるツイート追加をする場合はrequireRefreshをtrueにすること
     public void add(Status status) {
         statuses.put(status.getId(), status);
     }
