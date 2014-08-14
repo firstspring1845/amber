@@ -26,13 +26,13 @@ public class EntityModel {
             sb.append("https://twitter.com/");
             sb.append(sn);
             url = sb.toString();
-        } else if (entity instanceof URLEntity) {
-            URLEntity urlEntity = (URLEntity) entity;
-            str = urlEntity.getExpandedURL();
-            url = str;
         } else if (entity instanceof MediaEntity) {
             MediaEntity mediaEntity = (MediaEntity) entity;
             str = mediaEntity.getMediaURL();
+            url = str;
+        } else if (entity instanceof URLEntity) {
+            URLEntity urlEntity = (URLEntity) entity;
+            str = urlEntity.getExpandedURL();
             url = str;
         } else {
             str = ":(";
