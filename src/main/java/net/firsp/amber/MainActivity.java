@@ -205,13 +205,15 @@ public class MainActivity extends ActionBarActivity {
 
     long delete(File dir) {
         long deletebyte = 0;
-        for (File file : dir.listFiles()) {
-            if (file.isFile()) {
-                deletebyte += file.length();
-                file.delete();
-            }
-            if (file.isDirectory()) {
-                deletebyte += delete(file);
+        if(dir.isDirectory()){
+            for (File file : dir.listFiles()) {
+                if (file.isFile()) {
+                    deletebyte += file.length();
+                    file.delete();
+                }
+                if (file.isDirectory()) {
+                    deletebyte += delete(file);
+                }
             }
         }
         dir.delete();
