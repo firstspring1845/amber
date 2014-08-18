@@ -44,7 +44,7 @@ public abstract class StreamTimelineActivity extends ActionBarActivity implement
             new StatusDialogFragment(this, status).show(getFragmentManager(), "Status");
         });
         view.setOnScrollListener(adapter);
-        account = Accounts.getInstance().getAccount(getIntent().getLongExtra("id", 0));
+        account = Accounts.getInstance().getAccount(getIntent().getLongExtra("account", 0));
         userStream = account.getTwitterStream();
         userStream.addListener(this);
         userStream.addListener(Notificator.initialize(this));

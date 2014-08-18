@@ -58,7 +58,7 @@ public class AccountDialogFragment extends DialogFragment implements AdapterView
                 break;
             case 3:
                 Intent intent = new Intent(activity, UserStreamActivity.class);
-                intent.putExtra("id", account.getId());
+                intent.putExtra("account", account.getId());
                 activity.startActivity(intent);
                 break;
             case 4:

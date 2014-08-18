@@ -39,32 +39,18 @@ import twitter4j.Twitter;
 import twitter4j.TwitterStream;
 import twitter4j.User;
 
-public class ListStatusesActivity extends ActionBarActivity implements StatusListener {
-
-    StatusListAdapter adapter;
+public class ListStatusesActivity extends StreamTimelineActivity {
 
     StatusFilter filter = NopFilter.INSTANCE;
     long[] follows;
 
     long listId;
-    Account account;
-    TwitterStream userStream;
-    TwitterStream filterStream;
     Thread rest;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         Accounts.initialize(this);
-        ListView v = new ListView(this);
-        adapter = new StatusListAdapter(this);
-        v.setAdapter(adapter);
-        v.setOnScrollListener(adapter);
-        v.setOnItemClickListener((adapterView, view, i, l) -> {
-            Status status = (Status) adapter.getItem(i);
-            new StatusDialogFragment(ListStatusesActivity.this, status).show(getFragmentManager(), "Status");
-        });
-        setContentView(v);
 
         Intent intent = getIntent();
 
@@ -109,12 +95,6 @@ public class ListStatusesActivity extends ActionBarActivity implements StatusLis
     }
 
     @Override
-    public void onPause() {
-        super.onPause();
-        Crouton.cancelAllCroutons();
-    }
-
-    @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.list, menu);
         return true;
@@ -137,15 +117,6 @@ public class ListStatusesActivity extends ActionBarActivity implements StatusLis
     @Override
     public void onDestroy() {
         super.onDestroy();
-        Crouton.cancelAllCroutons();
-        try {
-            userStream.shutdown();
-        } catch (Exception e) {
-        }
-        try {
-            filterStream.shutdown();
-        } catch (Exception e) {
-        }
         try {
             rest.stop();
         } catch (Exception e) {
@@ -157,34 +128,8 @@ public class ListStatusesActivity extends ActionBarActivity implements StatusLis
     @Override
     public void onStatus(Status status) {
         if (filter.filter(status)) {
-            adapter.add(status);
-            adapter.requireRefresh = true;
+            addStatus(status);
         }
-    }
-
-    @Override
-    public void onDeletionNotice(StatusDeletionNotice statusDeletionNotice) {
-
-    }
-
-    @Override
-    public void onTrackLimitationNotice(int i) {
-
-    }
-
-    @Override
-    public void onScrubGeo(long l, long l2) {
-
-    }
-
-    @Override
-    public void onStallWarning(StallWarning stallWarning) {
-
-    }
-
-    @Override
-    public void onException(Exception e) {
-
     }
 
     //User
