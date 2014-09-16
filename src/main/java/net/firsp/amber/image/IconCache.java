@@ -88,7 +88,8 @@ public class IconCache implements Runnable {
             byte[] md5 = MessageDigest.getInstance("MD5").digest(src.getBytes());
             StringBuilder sb = new StringBuilder();
             for (byte b : md5) {
-                sb.append(String.format("%02x", b));
+                sb.append(Character.forDigit(b >> 4 & 0xF, 16));
+                sb.append(Character.forDigit(b & 0xF, 16));
             }
             return sb.toString();
         } catch (Exception e) {
