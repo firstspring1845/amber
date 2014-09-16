@@ -63,6 +63,7 @@ public abstract class StreamTimelineActivity extends ActionBarActivity implement
 
     public void addStatus(final Status status) {
         //表示位置がトップじゃなければTLに挿入しない
+        //TL、膣内に射精すぞ！！！！！！！！！！！！！！！！！！！！！！！！！！！！
         if (view.getFirstVisiblePosition() != 0 || view.getChildAt(0) == null || view.getChildAt(0).getTop() != 0) {
             adapter.add(status);
             adapter.requireRefresh = true;

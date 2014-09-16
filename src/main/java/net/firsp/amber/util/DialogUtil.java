@@ -11,6 +11,7 @@ import net.firsp.amber.account.Accounts;
 import twitter4j.AsyncTwitter;
 import twitter4j.Status;
 import twitter4j.StatusUpdate;
+import twitter4j.Twitter;
 
 public class DialogUtil {
 
@@ -45,13 +46,19 @@ public class DialogUtil {
                 .setTitle(status == null ? "Tweet" : "Reply")
                 .setView(editText)
                 .setPositiveButton("発射", (di, i) -> {
-                    AsyncTwitter t = Accounts.getInstance().getDefaultAccount().getAsyncTwitter();
-                    t.addListener(AsyncTwitterUtil.getTwitterListener(activity));
+                    Twitter t = Accounts.getInstance().getDefaultAccount().getTwitter();
                     StatusUpdate s = new StatusUpdate(editText.getText().toString());
                     if (status != null) {
                         s.setInReplyToStatusId(status.getId());
                     }
-                    t.updateStatus(s);
+                    new Thread(()->{
+                       try{
+                           t.updateStatus(s);
+                           CroutonUtil.showText(activity, "ツイートしたんたん");
+                       }catch(Exception e){
+                           CroutonUtil.error(activity);
+                       }
+                    }).start();
                 })
                 .create()
                 .show();

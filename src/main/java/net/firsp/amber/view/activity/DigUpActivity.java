@@ -14,8 +14,6 @@ import twitter4j.Twitter;
 
 public class DigUpActivity extends Activity {
 
-    //Configurationのほうで自分のRTを含ませる設定をしておく
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

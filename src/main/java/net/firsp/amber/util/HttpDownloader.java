@@ -15,7 +15,7 @@ public class HttpDownloader {
             InputStream is = con.getInputStream();
             ByteArrayOutputStream os = new ByteArrayOutputStream();
 
-            byte[] buf = new byte[10240];
+            byte[] buf = new byte[1024];
             int bufSize = 0;
 
             while ((bufSize = is.read(buf)) != -1) {

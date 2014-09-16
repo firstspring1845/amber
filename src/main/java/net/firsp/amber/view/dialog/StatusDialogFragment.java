@@ -15,6 +15,7 @@ import android.widget.ListView;
 
 import net.firsp.amber.account.Accounts;
 import net.firsp.amber.util.AsyncTwitterUtil;
+import net.firsp.amber.util.CroutonUtil;
 import net.firsp.amber.util.DialogUtil;
 import net.firsp.amber.view.activity.UserTimelineActivity;
 
@@ -23,6 +24,7 @@ import java.util.List;
 
 import twitter4j.AsyncTwitter;
 import twitter4j.Status;
+import twitter4j.Twitter;
 
 public class StatusDialogFragment extends DialogFragment implements AdapterView.OnItemClickListener {
 
@@ -57,34 +59,46 @@ public class StatusDialogFragment extends DialogFragment implements AdapterView.
     @Override
     public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
         dismiss();
-        final AsyncTwitter t = Accounts.getInstance().getDefaultAccount().getAsyncTwitter();
-        t.addListener(AsyncTwitterUtil.getTwitterListener(activity));
-        final Status original = status.isRetweet() ? status.getRetweetedStatus() : status;
+        Twitter t = Accounts.getInstance().getDefaultAccount().getTwitter();
+        Status original = status.isRetweet() ? status.getRetweetedStatus() : status;
         switch (i) {
             case 0:
                 DialogUtil.showTweetDialog(activity, original);
                 break;
             case 1:
-                t.createFavorite(original.getId());
+                new Thread(()->{
+                   try{
+                       t.createFavorite(original.getId());
+                       CroutonUtil.showText(activity, "ふぁぼふぁぼしたんたん");
+                   }catch(Exception e){
+                       CroutonUtil.error(activity);
+                   }
+                }).start();
                 break;
             case 2:
-                t.destroyFavorite(original.getId());
+                new Thread(()->{
+                   try{
+                       t.destroyFavorite(original.getId());
+                       CroutonUtil.showText(activity, "あんふぁぼしたんたん");
+                   }catch(Exception e){
+                       CroutonUtil.error(activity);
+                   }
+                }).start();
                 break;
             case 3:
                 new AlertDialog.Builder(activity)
                         .setMessage("リツイートしてもいい？")
-                        .setPositiveButton("よろしい", new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialogInterface, int i) {
-                                t.retweetStatus(original.getId());
-                            }
+                        .setPositiveButton("よろしい", (di,ii)->{
+                            new Thread(()->{
+                               try{
+                                   t.retweetStatus(original.getId());
+                                   CroutonUtil.showText(activity, "リツイートしたんたん");
+                               }catch(Exception e){
+                                   CroutonUtil.error(activity);
+                               }
+                            }).start();
                         })
-                        .setNegativeButton("だめ", new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialogInterface, int i) {
-
-                            }
-                        })
+                        .setNegativeButton("だめ",(di,ii)->{})
                         .create()
                         .show();
                 break;
